@@ -60,8 +60,7 @@ function Earth({ selectedDestination }: { selectedDestination: string | null }) 
 export default function Globe({ selectedDestination }: { selectedDestination: string | null }) {
   return (
     <div className="w-full h-[60vh] md:h-[80vh] cursor-grab active:cursor-grabbing">
-      <Canvas camera={{ position: [0, 0, 6], fov: 45 }}>
-        <color attach="background" args={['transparent']} />
+      <Canvas camera={{ position: [0, 0, 6], fov: 45 }} gl={{ alpha: true }}>
         
         <ambientLight intensity={0.5} />
         <directionalLight position={[10, 10, 5]} intensity={2} color="#ffffff" />
