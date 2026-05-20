@@ -12,8 +12,8 @@ import { destinationsData, Destination } from "@/data/destinations";
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
-  // Set initial selected destination to Japan so the page looks stunning on load
-  const [selectedDestination, setSelectedDestination] = useState<Destination | null>(destinationsData["Japan"]);
+  // Set initial selected destination to India so the page looks stunning on load
+  const [selectedDestination, setSelectedDestination] = useState<Destination | null>(destinationsData["India"]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalDest, setModalDest] = useState("");
