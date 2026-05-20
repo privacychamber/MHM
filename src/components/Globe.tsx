@@ -470,15 +470,14 @@ function Earth({ selectedDestination, lightPos }: { selectedDestination: string 
         </mesh>
       )}
 
-      {/* Render Destination Pins */}
-      {pins.map((dest) => (
+      {/* Render Destination Pin only for the active searched/selected destination */}
+      {selectedDestination && destinationsData[selectedDestination] && (
         <DestinationPin 
-          key={dest.id}
-          lat={dest.lat}
-          lng={dest.lng}
-          isSelected={selectedDestination === dest.id}
+          lat={destinationsData[selectedDestination].lat}
+          lng={destinationsData[selectedDestination].lng}
+          isSelected={true}
         />
-      ))}
+      )}
 
       {/* Render Flight path from India to Selected Destination */}
       {selectedDestination && selectedDestination !== "india" && destinationsData[selectedDestination] && (
