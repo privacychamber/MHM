@@ -2,13 +2,12 @@
 
 import { useRef, useMemo, useState, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { OrbitControls, Stars, Float, Line } from "@react-three/drei";
+import { OrbitControls, Line } from "@react-three/drei";
 import * as THREE from "three";
 import { destinationsData } from "@/data/destinations";
 
-// Simplex Noise GLSL helper for procedural clouds
-const noiseGLSL = `
-// Ashima Arts Simplex 3D Noise
+// Ashima Arts 3D Simplex Noise for procedural Space Background
+const simplexNoiseGLSL = `
 vec4 permute(vec4 x){return mod(((x*34.0)+1.0)*x, 289.0);}
 vec4 taylorInvSqrt(vec4 r){return 1.79284291400159 - 0.85373472095314 * r;}
 
@@ -86,59 +85,71 @@ float fbm(vec3 p) {
 }
 `;
 
-// Atmospheric Glow Shader (Fresnel effect)
-const atmosphereVertexShader = `
-varying vec3 vNormal;
-void main() {
-  vNormal = normalize(normalMatrix * normal);
-  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-}
-`;
-
-const atmosphereFragmentShader = `
-varying vec3 vNormal;
-void main() {
-  float intensity = pow(0.72 - dot(vNormal, vec3(0, 0, 1.0)), 2.2);
-  gl_FragColor = vec4(0.35, 0.65, 1.0, 1.0) * intensity * 0.85;
-}
-`;
-
-// Procedural clouds shaders
-const cloudVertexShader = `
+// Space background shader rendering stars and Milky Way galaxy dust lane
+const spaceVertexShader = `
 varying vec3 vPosition;
-varying vec3 vNormal;
 void main() {
   vPosition = position;
-  vNormal = normalize(normalMatrix * normal);
   gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
 }
 `;
 
-const cloudFragmentShader = `
-uniform float time;
+const spaceFragmentShader = `
 varying vec3 vPosition;
-varying vec3 vNormal;
 
-${noiseGLSL}
+${simplexNoiseGLSL}
 
 void main() {
-  // Procedural drift
-  vec3 cloudPos = vPosition * 0.62 + vec3(time * 0.008, time * 0.004, time * 0.002);
-  float cloudDensity = fbm(cloudPos);
+  vec3 dir = normalize(vPosition);
+  
+  // Stars (High frequency noise thresholding)
+  float starNoise1 = snoise(dir * 180.0);
+  float starNoise2 = snoise(dir * 300.0);
+  float starPattern = smoothstep(0.91, 0.99, starNoise1) * 0.7 + smoothstep(0.93, 0.99, starNoise2) * 0.4;
+  vec3 stars = vec3(starPattern);
 
-  // Soft edge cloud masking
-  cloudDensity = smoothstep(0.08, 0.38, cloudDensity);
+  // Milky Way dust lane structure (low frequency noise)
+  // Aligning coordinates to form a diagonal band across the sky
+  vec3 nebulaPos = dir * 1.8;
+  float nebulaCloud = fbm(nebulaPos);
+  
+  // Shape the galactic band
+  float bandWidth = abs(dir.x + dir.y + dir.z) * 0.4;
+  float bandMask = smoothstep(0.7, 0.0, bandWidth);
+  
+  float finalNebula = smoothstep(0.12, 0.55, nebulaCloud) * bandMask;
+  
+  // Realistic Google Earth sky colors: dusty brown, dark navy blue, soft magenta highlights
+  vec3 nebulaColor = mix(vec3(0.005, 0.003, 0.012), vec3(0.065, 0.045, 0.038), finalNebula);
+  nebulaColor += vec3(0.008, 0.018, 0.038) * smoothstep(0.1, 0.6, fbm(nebulaPos * 3.0));
 
-  if (cloudDensity < 0.02) {
-    discard;
-  }
-
-  vec3 N = normalize(vNormal);
-  float diffuse = max(dot(N, vec3(0.5, 0.5, 0.7)), 0.0) + 0.25;
-
-  gl_FragColor = vec4(vec3(0.98, 0.98, 1.0) * diffuse, cloudDensity * 0.72);
+  vec3 finalSky = nebulaColor + stars;
+  gl_FragColor = vec4(finalSky, 1.0);
 }
 `;
+
+function SpaceBackground() {
+  const meshRef = useRef<THREE.Mesh>(null);
+  
+  useFrame(() => {
+    if (meshRef.current) {
+      // Very slow background cosmic drift
+      meshRef.current.rotation.y += 0.00012;
+    }
+  });
+
+  return (
+    <mesh ref={meshRef}>
+      <sphereGeometry args={[85, 32, 32]} />
+      <shaderMaterial
+        vertexShader={spaceVertexShader}
+        fragmentShader={spaceFragmentShader}
+        side={THREE.BackSide}
+        depthWrite={false}
+      />
+    </mesh>
+  );
+}
 
 function DestinationPin({ lat, lng, isSelected }: { lat: number; lng: number; isSelected: boolean }) {
   const pos = useMemo(() => {
@@ -167,14 +178,14 @@ function DestinationPin({ lat, lng, isSelected }: { lat: number; lng: number; is
     <group position={pos}>
       {/* Center dot */}
       <mesh>
-        <sphereGeometry args={[0.038, 16, 16]} />
-        <meshBasicMaterial color={isSelected ? "#facc15" : "#38bdf8"} />
+        <sphereGeometry args={[0.035, 16, 16]} />
+        <meshBasicMaterial color={isSelected ? "#facc15" : "#60a5fa"} />
       </mesh>
       {/* Pulsing ring */}
       <mesh ref={pulseRef}>
-        <ringGeometry args={[0.045, 0.095, 16]} />
+        <ringGeometry args={[0.042, 0.09, 16]} />
         <meshBasicMaterial 
-          color={isSelected ? "#facc15" : "#38bdf8"} 
+          color={isSelected ? "#facc15" : "#60a5fa"} 
           transparent 
           opacity={0.5} 
           side={THREE.DoubleSide} 
@@ -238,26 +249,87 @@ function FlightPath({ startLat, startLng, endLat, endLng }: { startLat: number; 
   );
 }
 
-function Earth({ selectedDestination }: { selectedDestination: string | null }) {
+// Illuminated Atmosphere Halo Shader reflecting solar vectors
+function EarthAtmosphere({ lightPos }: { lightPos: THREE.Vector3 }) {
+  const matRef = useRef<THREE.ShaderMaterial>(null);
+
+  useFrame((state) => {
+    if (matRef.current) {
+      // Calculate light vector relative to camera position (view space transformation)
+      const viewLightDir = lightPos.clone().applyMatrix4(state.camera.matrixWorldInverse).normalize();
+      matRef.current.uniforms.uLightDirection.value.copy(viewLightDir);
+    }
+  });
+
+  const uniforms = useMemo(() => ({
+    uLightDirection: { value: new THREE.Vector3() }
+  }), []);
+
+  return (
+    <mesh>
+      <sphereGeometry args={[2.532, 64, 64]} />
+      <shaderMaterial
+        ref={matRef}
+        vertexShader={`
+          varying vec3 vNormal;
+          varying vec3 vViewPosition;
+          void main() {
+            vNormal = normalize(normalMatrix * normal);
+            vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+            vViewPosition = -mvPosition.xyz;
+            gl_Position = projectionMatrix * mvPosition;
+          }
+        `}
+        fragmentShader={`
+          varying vec3 vNormal;
+          varying vec3 vViewPosition;
+          uniform vec3 uLightDirection;
+          void main() {
+            // Edge glowing intensity (Fresnel effect)
+            float intensity = pow(0.72 - dot(vNormal, vec3(0.0, 0.0, 1.0)), 2.8);
+            
+            // Illuminate only the day side facing the light source
+            float dayLight = max(dot(vNormal, uLightDirection), 0.0);
+            
+            // Clean Google Earth sky-blue haze scattering color
+            vec3 glowColor = vec3(0.35, 0.65, 1.0);
+            
+            // Final alpha maps atmosphere brightness
+            float finalAlpha = intensity * (dayLight * 0.94 + 0.06);
+            
+            gl_FragColor = vec4(glowColor, finalAlpha * 0.85);
+          }
+        `}
+        blending={THREE.AdditiveBlending}
+        side={THREE.BackSide}
+        transparent={true}
+        depthWrite={false}
+      />
+    </mesh>
+  );
+}
+
+function Earth({ selectedDestination, lightPos }: { selectedDestination: string | null; lightPos: THREE.Vector3 }) {
   const earthRef = useRef<THREE.Group>(null);
   const cloudsRef = useRef<THREE.Mesh>(null);
 
-  // States to manage satellite textures safely with CORS set
+  // States to manage satellite and cloud textures safely
   const [textures, setTextures] = useState<{
     map: THREE.Texture | null;
     bump: THREE.Texture | null;
     specular: THREE.Texture | null;
+    clouds: THREE.Texture | null;
   }>({
     map: null,
     bump: null,
-    specular: null
+    specular: null,
+    clouds: null
   });
 
   const [failed, setFailed] = useState(false);
 
   useEffect(() => {
     const loader = new THREE.TextureLoader();
-    // CRITICAL: Explicitly request cross-origin credentials/anonymous access
     loader.setCrossOrigin("anonymous");
     
     // Load satellite textures
@@ -270,18 +342,34 @@ function Earth({ selectedDestination }: { selectedDestination: string | null }) 
             loader.load(
               "https://unpkg.com/three-globe/example/img/earth-water.png",
               (specTex) => {
-                setTextures({
-                  map: mapTex,
-                  bump: bumpTex,
-                  specular: specTex
-                });
+                loader.load(
+                  "https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_clouds_1024.png",
+                  (cloudTex) => {
+                    setTextures({
+                      map: mapTex,
+                      bump: bumpTex,
+                      specular: specTex,
+                      clouds: cloudTex
+                    });
+                  },
+                  undefined,
+                  () => {
+                    setTextures({
+                      map: mapTex,
+                      bump: bumpTex,
+                      specular: specTex,
+                      clouds: null
+                    });
+                  }
+                );
               },
               undefined,
               () => {
                 setTextures({
                   map: mapTex,
                   bump: bumpTex,
-                  specular: null
+                  specular: null,
+                  clouds: null
                 });
               }
             );
@@ -291,28 +379,21 @@ function Earth({ selectedDestination }: { selectedDestination: string | null }) 
             setTextures({
               map: mapTex,
               bump: null,
-              specular: null
+              specular: null,
+              clouds: null
             });
           }
         );
       },
       undefined,
       (err) => {
-        console.error("CORS / Texture Load failed for Earth:", err);
+        console.error("CORS load failed for Earth map:", err);
         setFailed(true);
       }
     );
   }, []);
 
-  // Uniform variables for the drifting cloud shader
-  const cloudUniforms = useMemo(() => ({
-    time: { value: 0 }
-  }), []);
-
   useFrame((state) => {
-    const elapsed = state.clock.getElapsedTime();
-    cloudUniforms.time.value = elapsed;
-
     // Smooth centering camera animation on search/select
     if (earthRef.current) {
       if (selectedDestination && destinationsData[selectedDestination]) {
@@ -330,8 +411,9 @@ function Earth({ selectedDestination }: { selectedDestination: string | null }) 
     }
 
     if (cloudsRef.current) {
-      // Rotate clouds slightly faster than earth
+      // Cloud layer drifts slowly over time
       cloudsRef.current.rotation.y += 0.0022;
+      cloudsRef.current.rotation.x += 0.0004;
     }
   });
 
@@ -341,16 +423,14 @@ function Earth({ selectedDestination }: { selectedDestination: string | null }) 
 
   return (
     <group ref={earthRef}>
-      {/* 1. Realistic Earth Globe with NASA satellite imagery */}
+      {/* 1. Earth Body Mesh */}
       {failed ? (
-        // High fidelity procedural fallback color globe if network blocks unpkg
         <mesh castShadow receiveShadow>
           <sphereGeometry args={[2.5, 64, 64]} />
           <meshStandardMaterial 
             color="#0b1329"
             roughness={0.4}
             metalness={0.6}
-            wireframe={false}
           />
         </mesh>
       ) : textures.map ? (
@@ -359,14 +439,13 @@ function Earth({ selectedDestination }: { selectedDestination: string | null }) 
           <meshStandardMaterial 
             map={textures.map}
             bumpMap={textures.bump || undefined}
-            bumpScale={0.08}
+            bumpScale={0.075}
             roughnessMap={textures.specular || undefined}
             roughness={0.45}
-            metalness={0.05}
+            metalness={0.06}
           />
         </mesh>
       ) : (
-        // Loading state placeholder sphere
         <mesh>
           <sphereGeometry args={[2.5, 32, 32]} />
           <meshStandardMaterial 
@@ -377,29 +456,19 @@ function Earth({ selectedDestination }: { selectedDestination: string | null }) 
         </mesh>
       )}
 
-      {/* 2. Drifting cloud layer using procedural noise (doesn't need texture download) */}
-      <mesh ref={cloudsRef}>
-        <sphereGeometry args={[2.518, 64, 64]} />
-        <shaderMaterial 
-          vertexShader={cloudVertexShader}
-          fragmentShader={cloudFragmentShader}
-          uniforms={cloudUniforms}
-          transparent={true}
-          depthWrite={false}
-        />
-      </mesh>
-
-      {/* 3. Real Atmospheric Glow (Fresnel Halo) */}
-      <mesh>
-        <sphereGeometry args={[2.58, 32, 32]} />
-        <shaderMaterial
-          vertexShader={atmosphereVertexShader}
-          fragmentShader={atmosphereFragmentShader}
-          blending={THREE.AdditiveBlending}
-          side={THREE.BackSide}
-          transparent={true}
-        />
-      </mesh>
+      {/* 2. Realistic Weather Clouds Layer (Matching Google Earth styling) */}
+      {!failed && textures.clouds && (
+        <mesh ref={cloudsRef}>
+          <sphereGeometry args={[2.516, 64, 64]} />
+          <meshStandardMaterial
+            map={textures.clouds}
+            transparent={true}
+            opacity={0.7}
+            blending={THREE.NormalBlending}
+            depthWrite={false}
+          />
+        </mesh>
+      )}
 
       {/* Render Destination Pins */}
       {pins.map((dest) => (
@@ -425,27 +494,29 @@ function Earth({ selectedDestination }: { selectedDestination: string | null }) 
 }
 
 export default function Globe({ selectedDestination }: { selectedDestination: string | null }) {
+  // Define light position to align daylight terminator curve
+  const lightPosition = useMemo(() => new THREE.Vector3(12, 5, 8), []);
+
   return (
     <div className="w-full h-[60vh] md:h-[80vh] cursor-grab active:cursor-grabbing">
       <Canvas camera={{ position: [0, 0, 6.2], fov: 45 }} gl={{ alpha: true }}>
-        <ambientLight intensity={0.5} />
-        <directionalLight position={[10, 10, 5]} intensity={1.8} color="#ffffff" />
-        <pointLight position={[-10, -10, -5]} intensity={0.5} color="#1e293b" />
-
-        <Float speed={1.0} rotationIntensity={0.15} floatIntensity={0.15}>
-          <Earth selectedDestination={selectedDestination} />
-        </Float>
-
-        <Stars 
-          radius={90} 
-          depth={40} 
-          count={3200} 
-          factor={4.5} 
-          saturation={0.5} 
-          fade 
-          speed={1.0} 
-        />
+        {/* Deep space ambient fill */}
+        <ambientLight intensity={0.06} />
         
+        {/* Strong Sun direction to form day/night shadow curves */}
+        <directionalLight position={lightPosition} intensity={2.6} color="#ffffff" />
+        
+        {/* Extremely faint back light to highlight ocean edges slightly on dark side */}
+        <directionalLight position={[-12, -5, -8]} intensity={0.08} color="#38bdf8" />
+
+        {/* Space dust lane and stellar background skybox */}
+        <SpaceBackground />
+
+        {/* Illuminated Atmosphere Halo */}
+        <EarthAtmosphere lightPos={lightPosition} />
+
+        <Earth selectedDestination={selectedDestination} lightPos={lightPosition} />
+
         <OrbitControls 
           enableZoom={false} 
           enablePan={false}

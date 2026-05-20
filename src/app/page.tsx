@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Globe from "@/components/Globe";
 import DestinationCard from "@/components/DestinationCard";
 import TrustSection from "@/components/TrustSection";
+import CreativeExperience from "@/components/CreativeExperience";
 import PackageSection from "@/components/PackageSection";
 import EnquiryModal from "@/components/EnquiryModal";
 import { destinationsData, Destination } from "@/data/destinations";
@@ -167,6 +168,9 @@ export default function Home() {
 
       {/* Trust Section */}
       <TrustSection />
+
+      {/* GSAP Creative Experience Showcase */}
+      <CreativeExperience />
 
       {/* Package Section */}
       <PackageSection />
