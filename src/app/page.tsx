@@ -140,12 +140,23 @@ export default function Home() {
             {/* Center & Right: Globe & Card */}
             <div className="lg:col-span-7 relative h-[60vh] lg:h-full flex items-center justify-center order-1 lg:order-2">
               <div className="absolute inset-0 w-full h-full">
-                <Globe selectedDestination={selectedDestination?.id || null} />
+                <Globe selectedDestination={
+                  (searchQuery.trim() !== "" && filteredDestinations.length > 0)
+                    ? filteredDestinations[0].id
+                    : (selectedDestination?.id || null)
+                } />
               </div>
               
               <div className="absolute top-1/2 lg:top-auto lg:bottom-10 right-0 transform -translate-y-1/2 lg:translate-y-0 w-full md:w-auto px-4 md:px-0 pointer-events-none flex justify-end md:justify-center lg:justify-end z-30">
                 <div className="pointer-events-auto">
-                  <DestinationCard destination={selectedDestination} onEnquire={triggerEnquiry} />
+                  <DestinationCard 
+                    destination={
+                      (searchQuery.trim() !== "" && filteredDestinations.length > 0)
+                        ? filteredDestinations[0]
+                        : selectedDestination
+                    } 
+                    onEnquire={triggerEnquiry} 
+                  />
                 </div>
               </div>
             </div>
