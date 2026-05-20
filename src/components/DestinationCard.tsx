@@ -4,26 +4,14 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Star, Clock, Map, Plane, Landmark, CheckCircle, Languages, Banknote, DollarSign } from "lucide-react";
 import Image from "next/image";
 
-export interface Destination {
-  id: string;
-  name: string;
-  flag: string;
-  rating: number;
-  reviews: string;
-  image: string;
-  topCities: string;
-  bestTime: string;
-  visa: string;
-  currency: string;
-  timeDiff: string;
-  flightDuration: string;
-}
+import { Destination } from "@/data/destinations";
 
 interface Props {
   destination: Destination | null;
+  onEnquire?: (destinationName: string) => void;
 }
 
-export default function DestinationCard({ destination }: Props) {
+export default function DestinationCard({ destination, onEnquire }: Props) {
   if (!destination) return null;
 
   return (
@@ -113,7 +101,10 @@ export default function DestinationCard({ destination }: Props) {
             </div>
           </div>
 
-          <button className="w-full relative group overflow-hidden rounded-xl bg-transparent border border-yellow-400 text-yellow-400 font-bold py-3 transition-all hover:shadow-[0_0_20px_rgba(250,204,21,0.3)]">
+          <button 
+            onClick={() => onEnquire && onEnquire(destination.name)}
+            className="w-full relative group overflow-hidden rounded-xl bg-transparent border border-yellow-400 text-yellow-400 font-bold py-3 transition-all hover:shadow-[0_0_20px_rgba(250,204,21,0.3)]"
+          >
             <span className="relative z-10 flex items-center justify-center gap-2">
               Explore Packages
             </span>

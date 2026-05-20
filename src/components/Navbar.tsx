@@ -4,10 +4,12 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Phone, Menu, X, PlaneTakeoff } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import EnquiryModal from "@/components/EnquiryModal";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -19,11 +21,11 @@ export default function Navbar() {
 
   const navLinks = [
     { name: "Home", href: "/" },
-    { name: "Destinations", href: "#destinations" },
-    { name: "Packages", href: "#packages" },
-    { name: "Visa Guide", href: "#visa" },
-    { name: "About Us", href: "#about" },
-    { name: "Contact", href: "#contact" },
+    { name: "Destinations", href: "/destinations" },
+    { name: "Packages", href: "/packages" },
+    { name: "Visa Guide", href: "/visa" },
+    { name: "About Us", href: "/about" },
+    { name: "Contact", href: "/contact" },
   ];
 
   return (
@@ -63,7 +65,10 @@ export default function Navbar() {
               <Phone size={16} className="text-yellow-400" />
               <span className="font-semibold">+91 84377 70006</span>
             </div>
-            <button className="bg-white/10 hover:bg-yellow-400 hover:text-navy-900 text-white border border-white/20 hover:border-yellow-400 transition-all px-6 py-2.5 rounded-full text-sm font-bold shadow-lg hover:shadow-[0_0_20px_rgba(250,204,21,0.4)] backdrop-blur-md">
+            <button 
+              onClick={() => setModalOpen(true)}
+              className="bg-white/10 hover:bg-yellow-400 hover:text-navy-900 text-white border border-white/20 hover:border-yellow-400 transition-all px-6 py-2.5 rounded-full text-sm font-bold shadow-lg hover:shadow-[0_0_20px_rgba(250,204,21,0.4)] backdrop-blur-md"
+            >
               Enquire Now
             </button>
           </div>
@@ -107,13 +112,21 @@ export default function Navbar() {
                   <p className="font-bold">+91 84377 70006</p>
                 </div>
               </div>
-              <button className="w-full bg-gradient-to-r from-yellow-400 to-yellow-600 text-navy-900 py-3 rounded-xl font-bold shadow-[0_0_15px_rgba(250,204,21,0.3)]">
+              <button 
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  setModalOpen(true);
+                }}
+                className="w-full bg-gradient-to-r from-yellow-400 to-yellow-600 text-navy-900 py-3 rounded-xl font-bold shadow-[0_0_15px_rgba(250,204,21,0.3)]"
+              >
                 Enquire Now
               </button>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
+
+      <EnquiryModal isOpen={modalOpen} onClose={() => setModalOpen(false)} defaultDestination="General Consultation" />
     </header>
   );
 }

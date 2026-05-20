@@ -42,11 +42,16 @@ export default function Footer() {
           <div>
             <h3 className="text-white font-bold text-lg mb-6">Quick Links</h3>
             <ul className="space-y-3">
-              {['About Us', 'Our Packages', 'Visa Services', 'Travel Insurance', 'Terms & Conditions', 'Privacy Policy'].map((item) => (
-                <li key={item}>
-                  <Link href="#" className="text-slate-400 hover:text-yellow-400 text-sm flex items-center gap-2 transition-colors">
+              {[
+                { name: 'About Us', href: '/about' },
+                { name: 'Our Packages', href: '/packages' },
+                { name: 'Visa Services', href: '/visa' },
+                { name: 'Contact Us', href: '/contact' }
+              ].map((link) => (
+                <li key={link.name}>
+                  <Link href={link.href} className="text-slate-400 hover:text-yellow-400 text-sm flex items-center gap-2 transition-colors">
                     <ArrowRight size={14} className="text-yellow-400/50" />
-                    {item}
+                    {link.name}
                   </Link>
                 </li>
               ))}
@@ -57,11 +62,18 @@ export default function Footer() {
           <div>
             <h3 className="text-white font-bold text-lg mb-6">Popular Destinations</h3>
             <ul className="space-y-3">
-              {['Japan', 'Switzerland', 'Dubai', 'Maldives', 'Thailand', 'Europe'].map((item) => (
-                <li key={item}>
-                  <Link href="#" className="text-slate-400 hover:text-yellow-400 text-sm flex items-center gap-2 transition-colors">
+              {[
+                { name: 'Japan', href: '/destinations' },
+                { name: 'Switzerland', href: '/destinations' },
+                { name: 'Dubai', href: '/destinations' },
+                { name: 'Maldives', href: '/destinations' },
+                { name: 'Thailand', href: '/destinations' },
+                { name: 'Singapore', href: '/destinations' }
+              ].map((link) => (
+                <li key={link.name}>
+                  <Link href={link.href} className="text-slate-400 hover:text-yellow-400 text-sm flex items-center gap-2 transition-colors">
                     <MapPin size={14} className="text-yellow-400/50" />
-                    {item}
+                    {link.name}
                   </Link>
                 </li>
               ))}

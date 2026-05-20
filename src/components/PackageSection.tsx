@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 // Import WhatsApp icon or use a generic one if not available.
 // We'll just create an SVG for WhatsApp inside the component.
@@ -52,19 +53,28 @@ export default function PackageSection() {
               </div>
 
               <div className="flex flex-col sm:flex-row gap-4 mt-10">
-                <button className="flex-1 group relative overflow-hidden rounded-xl bg-transparent border border-white/20 text-white font-bold py-4 px-6 transition-all hover:border-white">
-                  <span className="relative z-10 flex items-center justify-center gap-2 group-hover:gap-3 transition-all">
-                    View Packages <ArrowRight size={18} />
-                  </span>
-                  <div className="absolute inset-0 bg-white/5 translate-y-[100%] group-hover:translate-y-0 transition-transform duration-300 ease-out z-0"></div>
-                </button>
+                <Link href="/packages" className="flex-1">
+                  <button className="w-full group relative overflow-hidden rounded-xl bg-transparent border border-white/20 text-white font-bold py-4 px-6 transition-all hover:border-white">
+                    <span className="relative z-10 flex items-center justify-center gap-2 group-hover:gap-3 transition-all">
+                      View Packages <ArrowRight size={18} />
+                    </span>
+                    <div className="absolute inset-0 bg-white/5 translate-y-[100%] group-hover:translate-y-0 transition-transform duration-300 ease-out z-0"></div>
+                  </button>
+                </Link>
                 
-                <button className="flex-1 group relative overflow-hidden rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold py-4 px-6 transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)] hover:shadow-[0_0_30px_rgba(16,185,129,0.5)]">
-                  <span className="relative z-10 flex items-center justify-center gap-2">
-                    <WhatsAppIcon className="w-5 h-5 animate-pulse" /> Enquire on WhatsApp
-                  </span>
-                  <div className="absolute inset-0 bg-white/20 translate-y-[100%] group-hover:translate-y-0 transition-transform duration-300 ease-out z-0"></div>
-                </button>
+                <a 
+                  href="https://wa.me/918437770006?text=Hi%20MHM%20Travels!%20I'm%20interested%20in%20your%20all-inclusive%20packages%20starting%20at%2089999."
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1"
+                >
+                  <button className="w-full group relative overflow-hidden rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold py-4 px-6 transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)] hover:shadow-[0_0_30px_rgba(16,185,129,0.5)]">
+                    <span className="relative z-10 flex items-center justify-center gap-2">
+                      <WhatsAppIcon className="w-5 h-5 animate-pulse" /> Enquire on WhatsApp
+                    </span>
+                    <div className="absolute inset-0 bg-white/20 translate-y-[100%] group-hover:translate-y-0 transition-transform duration-300 ease-out z-0"></div>
+                  </button>
+                </a>
               </div>
             </div>
           </div>
