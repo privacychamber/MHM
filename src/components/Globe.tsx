@@ -139,24 +139,26 @@ function SpaceBackground({ isDark }: { isDark: boolean }) {
     }
   });
 
-  const uniforms = useMemo(() => ({
-    uIsDark: { value: 1.0 }
-  }), []);
+  const spaceMat = useMemo(() => {
+    return new THREE.ShaderMaterial({
+      uniforms: {
+        uIsDark: { value: 1.0 }
+      },
+      vertexShader: spaceVertexShader,
+      fragmentShader: spaceFragmentShader,
+      side: THREE.BackSide,
+      depthWrite: false
+    });
+  }, []);
 
   useEffect(() => {
-    uniforms.uIsDark.value = isDark ? 1.0 : 0.0;
-  }, [isDark, uniforms]);
+    spaceMat.uniforms.uIsDark.value = isDark ? 1.0 : 0.0;
+  }, [isDark, spaceMat]);
 
   return (
     <mesh ref={meshRef}>
       <sphereGeometry args={[85, 32, 32]} />
-      <shaderMaterial
-        uniforms={uniforms}
-        vertexShader={spaceVertexShader}
-        fragmentShader={spaceFragmentShader}
-        side={THREE.BackSide}
-        depthWrite={false}
-      />
+      <primitive object={spaceMat} />
     </mesh>
   );
 }
@@ -260,69 +262,70 @@ function FlightPath({ startLat, startLng, endLat, endLng }: { startLat: number; 
 }
 
 // Illuminated Atmosphere Halo Shader reflecting solar vectors & active theme mode
+const atmosphereVertexShader = `
+varying vec3 vNormal;
+varying vec3 vViewPosition;
+void main() {
+  vNormal = normalize(normalMatrix * normal);
+  vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+  vViewPosition = -mvPosition.xyz;
+  gl_Position = projectionMatrix * mvPosition;
+}
+`;
+
+const atmosphereFragmentShader = `
+varying vec3 vNormal;
+varying vec3 vViewPosition;
+uniform vec3 uLightDirection;
+uniform float uIsDark;
+void main() {
+  // Edge glowing intensity (Fresnel effect)
+  float intensity = pow(0.72 - dot(vNormal, vec3(0.0, 0.0, 1.0)), 2.8);
+  
+  // Illuminate only the day side facing the light source
+  float dayLight = max(dot(vNormal, uLightDirection), 0.0);
+  
+  // Clean Google Earth sky-blue haze scattering color
+  vec3 glowColor = mix(vec3(0.22, 0.52, 0.95), vec3(0.35, 0.65, 1.0), uIsDark);
+  
+  // Final alpha maps atmosphere brightness
+  float alphaScale = mix(0.55, 0.85, uIsDark);
+  float finalAlpha = intensity * (dayLight * 0.94 + 0.06) * alphaScale;
+  
+  gl_FragColor = vec4(glowColor, finalAlpha);
+}
+`;
+
 function EarthAtmosphere({ lightPos, isDark }: { lightPos: THREE.Vector3; isDark: boolean }) {
-  const matRef = useRef<THREE.ShaderMaterial>(null);
-
-  useFrame((state) => {
-    if (matRef.current) {
-      // Calculate light vector relative to camera position (view space transformation)
-      const viewLightDir = lightPos.clone().applyMatrix4(state.camera.matrixWorldInverse).normalize();
-      matRef.current.uniforms.uLightDirection.value.copy(viewLightDir);
-    }
-  });
-
-  const uniforms = useMemo(() => ({
-    uLightDirection: { value: new THREE.Vector3() },
-    uIsDark: { value: 1.0 }
-  }), []);
+  const atmosMat = useMemo(() => {
+    return new THREE.ShaderMaterial({
+      uniforms: {
+        uLightDirection: { value: new THREE.Vector3() },
+        uIsDark: { value: 1.0 }
+      },
+      vertexShader: atmosphereVertexShader,
+      fragmentShader: atmosphereFragmentShader,
+      blending: THREE.AdditiveBlending,
+      side: THREE.BackSide,
+      transparent: true,
+      depthWrite: false
+    });
+  }, []);
 
   useEffect(() => {
-    uniforms.uIsDark.value = isDark ? 1.0 : 0.0;
-  }, [isDark, uniforms]);
+    atmosMat.uniforms.uIsDark.value = isDark ? 1.0 : 0.0;
+  }, [isDark, atmosMat]);
+
+  useFrame((state) => {
+    // Calculate light vector relative to camera position (view space transformation)
+    const viewLightDir = lightPos.clone().applyMatrix4(state.camera.matrixWorldInverse).normalize();
+    atmosMat.uniforms.uLightDirection.value.copy(viewLightDir);
+  });
 
   return (
     <mesh>
       <sphereGeometry args={[2.532, 64, 64]} />
-      <shaderMaterial
-        ref={matRef}
-        uniforms={uniforms}
-        vertexShader={`
-          varying vec3 vNormal;
-          varying vec3 vViewPosition;
-          void main() {
-            vNormal = normalize(normalMatrix * normal);
-            vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-            vViewPosition = -mvPosition.xyz;
-            gl_Position = projectionMatrix * mvPosition;
-          }
-        `}
-        fragmentShader={`
-          varying vec3 vNormal;
-          varying vec3 vViewPosition;
-          uniform vec3 uLightDirection;
-          uniform float uIsDark;
-          void main() {
-            // Edge glowing intensity (Fresnel effect)
-            float intensity = pow(0.72 - dot(vNormal, vec3(0.0, 0.0, 1.0)), 2.8);
-            
-            // Illuminate only the day side facing the light source
-            float dayLight = max(dot(vNormal, uLightDirection), 0.0);
-            
-            // Clean Google Earth sky-blue haze scattering color
-            vec3 glowColor = mix(vec3(0.22, 0.52, 0.95), vec3(0.35, 0.65, 1.0), uIsDark);
-            
-            // Final alpha maps atmosphere brightness
-            float alphaScale = mix(0.55, 0.85, uIsDark);
-            float finalAlpha = intensity * (dayLight * 0.94 + 0.06) * alphaScale;
-            
-            gl_FragColor = vec4(glowColor, finalAlpha);
-          }
-        `}
-        blending={THREE.AdditiveBlending}
-        side={THREE.BackSide}
-        transparent={true}
-        depthWrite={false}
-      />
+      <primitive object={atmosMat} />
     </mesh>
   );
 }
@@ -350,15 +353,15 @@ function Earth({ selectedDestination, lightPos }: { selectedDestination: string 
     const loader = new THREE.TextureLoader();
     loader.setCrossOrigin("anonymous");
     
-    // Load satellite textures
+    // Load satellite textures from raw github content for 100% reliable CORS header support
     loader.load(
-      "https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg",
+      "https://raw.githubusercontent.com/vasturiano/three-globe/master/example/img/earth-blue-marble.jpg",
       (mapTex) => {
         loader.load(
-          "https://unpkg.com/three-globe/example/img/earth-topology.png",
+          "https://raw.githubusercontent.com/vasturiano/three-globe/master/example/img/earth-topology.png",
           (bumpTex) => {
             loader.load(
-              "https://unpkg.com/three-globe/example/img/earth-water.png",
+              "https://raw.githubusercontent.com/vasturiano/three-globe/master/example/img/earth-water.png",
               (specTex) => {
                 loader.load(
                   "https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_clouds_1024.png",
@@ -411,7 +414,7 @@ function Earth({ selectedDestination, lightPos }: { selectedDestination: string 
     );
   }, []);
 
-  useFrame((state) => {
+  useFrame(() => {
     // Smooth centering camera animation on search/select
     if (earthRef.current) {
       if (selectedDestination && destinationsData[selectedDestination]) {
@@ -463,7 +466,7 @@ function Earth({ selectedDestination, lightPos }: { selectedDestination: string 
         <mesh>
           <sphereGeometry args={[2.5, 32, 32]} />
           <meshStandardMaterial 
-            color="#020617" 
+            color="#0f172a" 
             roughness={0.8}
             metalness={0.1}
           />
