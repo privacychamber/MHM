@@ -96,6 +96,7 @@ void main() {
 
 const spaceFragmentShader = `
 varying vec3 vPosition;
+uniform float uIsDark;
 
 ${simplexNoiseGLSL}
 
@@ -105,30 +106,30 @@ void main() {
   // Stars (High frequency noise thresholding)
   float starNoise1 = snoise(dir * 180.0);
   float starNoise2 = snoise(dir * 300.0);
-  float starPattern = smoothstep(0.91, 0.99, starNoise1) * 0.7 + smoothstep(0.93, 0.99, starNoise2) * 0.4;
+  float starPattern = (smoothstep(0.91, 0.99, starNoise1) * 0.7 + smoothstep(0.93, 0.99, starNoise2) * 0.4) * uIsDark;
   vec3 stars = vec3(starPattern);
 
   // Milky Way dust lane structure (low frequency noise)
-  // Aligning coordinates to form a diagonal band across the sky
   vec3 nebulaPos = dir * 1.8;
   float nebulaCloud = fbm(nebulaPos);
   
-  // Shape the galactic band
   float bandWidth = abs(dir.x + dir.y + dir.z) * 0.4;
   float bandMask = smoothstep(0.7, 0.0, bandWidth);
   
-  float finalNebula = smoothstep(0.12, 0.55, nebulaCloud) * bandMask;
+  float finalNebula = smoothstep(0.12, 0.55, nebulaCloud) * bandMask * uIsDark;
   
-  // Realistic Google Earth sky colors: dusty brown, dark navy blue, soft magenta highlights
-  vec3 nebulaColor = mix(vec3(0.005, 0.003, 0.012), vec3(0.065, 0.045, 0.038), finalNebula);
-  nebulaColor += vec3(0.008, 0.018, 0.038) * smoothstep(0.1, 0.6, fbm(nebulaPos * 3.0));
+  vec3 darkSky = mix(vec3(0.005, 0.003, 0.012), vec3(0.065, 0.045, 0.038), finalNebula);
+  darkSky += vec3(0.008, 0.018, 0.038) * smoothstep(0.1, 0.6, fbm(nebulaPos * 3.0)) * uIsDark;
 
-  vec3 finalSky = nebulaColor + stars;
+  // Premium, clean soft sky color for light mode (stone/slate gradient-matching)
+  vec3 lightSky = vec3(0.96, 0.97, 0.98);
+
+  vec3 finalSky = mix(lightSky, darkSky, uIsDark);
   gl_FragColor = vec4(finalSky, 1.0);
 }
 `;
 
-function SpaceBackground() {
+function SpaceBackground({ isDark }: { isDark: boolean }) {
   const meshRef = useRef<THREE.Mesh>(null);
   
   useFrame(() => {
@@ -138,10 +139,19 @@ function SpaceBackground() {
     }
   });
 
+  const uniforms = useMemo(() => ({
+    uIsDark: { value: 1.0 }
+  }), []);
+
+  useEffect(() => {
+    uniforms.uIsDark.value = isDark ? 1.0 : 0.0;
+  }, [isDark, uniforms]);
+
   return (
     <mesh ref={meshRef}>
       <sphereGeometry args={[85, 32, 32]} />
       <shaderMaterial
+        uniforms={uniforms}
         vertexShader={spaceVertexShader}
         fragmentShader={spaceFragmentShader}
         side={THREE.BackSide}
@@ -179,13 +189,13 @@ function DestinationPin({ lat, lng, isSelected }: { lat: number; lng: number; is
       {/* Center dot */}
       <mesh>
         <sphereGeometry args={[0.035, 16, 16]} />
-        <meshBasicMaterial color={isSelected ? "#facc15" : "#60a5fa"} />
+        <meshBasicMaterial color={isSelected ? "#eab308" : "#3b82f6"} />
       </mesh>
       {/* Pulsing ring */}
       <mesh ref={pulseRef}>
         <ringGeometry args={[0.042, 0.09, 16]} />
         <meshBasicMaterial 
-          color={isSelected ? "#facc15" : "#60a5fa"} 
+          color={isSelected ? "#eab308" : "#3b82f6"} 
           transparent 
           opacity={0.5} 
           side={THREE.DoubleSide} 
@@ -236,7 +246,7 @@ function FlightPath({ startLat, startLng, endLat, endLng }: { startLat: number; 
     <group>
       <Line
         points={curvePoints}
-        color="#facc15"
+        color="#eab308"
         lineWidth={1.5}
         transparent
         opacity={0.8}
@@ -249,8 +259,8 @@ function FlightPath({ startLat, startLng, endLat, endLng }: { startLat: number; 
   );
 }
 
-// Illuminated Atmosphere Halo Shader reflecting solar vectors
-function EarthAtmosphere({ lightPos }: { lightPos: THREE.Vector3 }) {
+// Illuminated Atmosphere Halo Shader reflecting solar vectors & active theme mode
+function EarthAtmosphere({ lightPos, isDark }: { lightPos: THREE.Vector3; isDark: boolean }) {
   const matRef = useRef<THREE.ShaderMaterial>(null);
 
   useFrame((state) => {
@@ -262,14 +272,20 @@ function EarthAtmosphere({ lightPos }: { lightPos: THREE.Vector3 }) {
   });
 
   const uniforms = useMemo(() => ({
-    uLightDirection: { value: new THREE.Vector3() }
+    uLightDirection: { value: new THREE.Vector3() },
+    uIsDark: { value: 1.0 }
   }), []);
+
+  useEffect(() => {
+    uniforms.uIsDark.value = isDark ? 1.0 : 0.0;
+  }, [isDark, uniforms]);
 
   return (
     <mesh>
       <sphereGeometry args={[2.532, 64, 64]} />
       <shaderMaterial
         ref={matRef}
+        uniforms={uniforms}
         vertexShader={`
           varying vec3 vNormal;
           varying vec3 vViewPosition;
@@ -284,6 +300,7 @@ function EarthAtmosphere({ lightPos }: { lightPos: THREE.Vector3 }) {
           varying vec3 vNormal;
           varying vec3 vViewPosition;
           uniform vec3 uLightDirection;
+          uniform float uIsDark;
           void main() {
             // Edge glowing intensity (Fresnel effect)
             float intensity = pow(0.72 - dot(vNormal, vec3(0.0, 0.0, 1.0)), 2.8);
@@ -292,12 +309,13 @@ function EarthAtmosphere({ lightPos }: { lightPos: THREE.Vector3 }) {
             float dayLight = max(dot(vNormal, uLightDirection), 0.0);
             
             // Clean Google Earth sky-blue haze scattering color
-            vec3 glowColor = vec3(0.35, 0.65, 1.0);
+            vec3 glowColor = mix(vec3(0.22, 0.52, 0.95), vec3(0.35, 0.65, 1.0), uIsDark);
             
             // Final alpha maps atmosphere brightness
-            float finalAlpha = intensity * (dayLight * 0.94 + 0.06);
+            float alphaScale = mix(0.55, 0.85, uIsDark);
+            float finalAlpha = intensity * (dayLight * 0.94 + 0.06) * alphaScale;
             
-            gl_FragColor = vec4(glowColor, finalAlpha * 0.85);
+            gl_FragColor = vec4(glowColor, finalAlpha);
           }
         `}
         blending={THREE.AdditiveBlending}
@@ -417,10 +435,6 @@ function Earth({ selectedDestination, lightPos }: { selectedDestination: string 
     }
   });
 
-  const pins = useMemo(() => {
-    return Object.values(destinationsData);
-  }, []);
-
   return (
     <group ref={earthRef}>
       {/* 1. Earth Body Mesh */}
@@ -456,7 +470,7 @@ function Earth({ selectedDestination, lightPos }: { selectedDestination: string 
         </mesh>
       )}
 
-      {/* 2. Realistic Weather Clouds Layer (Matching Google Earth styling) */}
+      {/* 2. Realistic Weather Clouds Layer */}
       {!failed && textures.clouds && (
         <mesh ref={cloudsRef}>
           <sphereGeometry args={[2.516, 64, 64]} />
@@ -493,8 +507,23 @@ function Earth({ selectedDestination, lightPos }: { selectedDestination: string 
 }
 
 export default function Globe({ selectedDestination }: { selectedDestination: string | null }) {
-  // Define light position to align daylight terminator curve
   const lightPosition = useMemo(() => new THREE.Vector3(12, 5, 8), []);
+  const [isDark, setIsDark] = useState(true);
+
+  // Monitor class changes on <html> to update uniforms on the fly
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const checkTheme = () => {
+      setIsDark(document.documentElement.classList.contains("dark"));
+    };
+
+    const observer = new MutationObserver(checkTheme);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    checkTheme();
+
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <div className="w-full h-[60vh] md:h-[80vh] cursor-grab active:cursor-grabbing">
@@ -509,10 +538,10 @@ export default function Globe({ selectedDestination }: { selectedDestination: st
         <directionalLight position={[-12, -5, -8]} intensity={0.08} color="#38bdf8" />
 
         {/* Space dust lane and stellar background skybox */}
-        <SpaceBackground />
+        <SpaceBackground isDark={isDark} />
 
         {/* Illuminated Atmosphere Halo */}
-        <EarthAtmosphere lightPos={lightPosition} />
+        <EarthAtmosphere lightPos={lightPosition} isDark={isDark} />
 
         <Earth selectedDestination={selectedDestination} lightPos={lightPosition} />
 

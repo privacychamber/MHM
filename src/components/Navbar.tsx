@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { Phone, Menu, X, PlaneTakeoff } from "lucide-react";
+import { Phone, Menu, X, PlaneTakeoff, Sun, Moon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import EnquiryModal from "@/components/EnquiryModal";
 
@@ -10,14 +10,33 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
+  const [theme, setTheme] = useState<"dark" | "light">("dark");
 
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
     };
     window.addEventListener("scroll", handleScroll);
+    
+    // Set theme initialization
+    const savedTheme = localStorage.getItem("theme") as "dark" | "light";
+    if (savedTheme) {
+      setTheme(savedTheme);
+      document.documentElement.classList.toggle("dark", savedTheme === "dark");
+    } else {
+      setTheme("dark");
+      document.documentElement.classList.add("dark");
+    }
+
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const toggleTheme = () => {
+    const nextTheme = theme === "dark" ? "light" : "dark";
+    setTheme(nextTheme);
+    localStorage.setItem("theme", nextTheme);
+    document.documentElement.classList.toggle("dark", nextTheme === "dark");
+  };
 
   const navLinks = [
     { name: "Home", href: "/" },
@@ -31,7 +50,9 @@ export default function Navbar() {
   return (
     <header
       className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-        scrolled ? "bg-navy-900/80 backdrop-blur-xl border-b border-white/10 py-3" : "bg-transparent py-5"
+        scrolled 
+          ? "bg-navy-900/80 backdrop-blur-xl border-b border-white/10 py-3" 
+          : "bg-transparent py-5"
       }`}
     >
       <div className="container mx-auto px-4 md:px-6">
@@ -61,6 +82,15 @@ export default function Navbar() {
           </nav>
 
           <div className="hidden lg:flex items-center gap-6">
+            {/* Dark/Light Toggle */}
+            <button 
+              onClick={toggleTheme}
+              className="p-2.5 rounded-full bg-white/5 border border-white/10 text-white hover:text-yellow-400 hover:bg-white/10 transition-all cursor-pointer shadow-md"
+              title={theme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
+            >
+              {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+            </button>
+
             <div className="flex items-center gap-2 text-sm text-white">
               <Phone size={16} className="text-yellow-400" />
               <span className="font-semibold">+91 84377 70006</span>
@@ -73,13 +103,21 @@ export default function Navbar() {
             </button>
           </div>
 
-          {/* Mobile Menu Toggle */}
-          <button 
-            className="lg:hidden text-white p-2"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          >
-            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
+          {/* Mobile Menu & Theme Toggles */}
+          <div className="flex items-center gap-3 lg:hidden">
+            <button 
+              onClick={toggleTheme}
+              className="p-2 rounded-full bg-white/5 border border-white/10 text-white transition-all"
+            >
+              {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
+            </button>
+            <button 
+              className="text-white p-2"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            >
+              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
         </div>
       </div>
 
