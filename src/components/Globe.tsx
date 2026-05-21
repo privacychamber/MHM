@@ -379,6 +379,7 @@ void main() {
 function Earth({ selectedDestination, lightPos }: { selectedDestination: string | null; lightPos: THREE.Vector3 }) {
   const earthRef   = useRef<THREE.Group>(null);
   const cloudsRef  = useRef<THREE.Mesh>(null);
+  const prevDestRef = useRef<string | null>(null);
 
   const [textures, setTextures] = useState<{
     day:    THREE.Texture | null;
@@ -455,11 +456,19 @@ function Earth({ selectedDestination, lightPos }: { selectedDestination: string 
     if (earthRef.current) {
       const dest = getDestById(selectedDestination);
       if (dest) {
+        // When destination changes, normalise accumulated rotation.y to [-π, π]
+        // so lerp always takes the *shortest* path instead of spinning many extra turns.
+        if (prevDestRef.current !== selectedDestination) {
+          prevDestRef.current = selectedDestination;
+          const cur = earthRef.current.rotation.y;
+          earthRef.current.rotation.y = ((cur % (2 * Math.PI)) + 3 * Math.PI) % (2 * Math.PI) - Math.PI;
+        }
         const targetY = -(dest.lng * Math.PI) / 180;
         const targetX = -(dest.lat * Math.PI) / 180;
-        earthRef.current.rotation.y = THREE.MathUtils.lerp(earthRef.current.rotation.y, targetY, 0.05);
-        earthRef.current.rotation.x = THREE.MathUtils.lerp(earthRef.current.rotation.x, targetX, 0.05);
+        earthRef.current.rotation.y = THREE.MathUtils.lerp(earthRef.current.rotation.y, targetY, 0.07);
+        earthRef.current.rotation.x = THREE.MathUtils.lerp(earthRef.current.rotation.x, targetX, 0.07);
       } else {
+        prevDestRef.current = null;
         earthRef.current.rotation.y += 0.0015;
         earthRef.current.rotation.x = THREE.MathUtils.lerp(earthRef.current.rotation.x, 0, 0.05);
       }

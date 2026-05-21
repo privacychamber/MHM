@@ -34,7 +34,7 @@ export default function DestinationCard({ destination, onEnquire, onClose }: Pro
         animate={{ opacity: 1, x: 0, scale: 1 }}
         exit={{ opacity: 0, x: 60, scale: 0.96 }}
         transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-        className="w-full bg-[#080e24]/85 backdrop-blur-2xl border border-white/10 rounded-3xl overflow-hidden shadow-[0_8px_60px_rgba(0,0,0,0.8)] flex flex-col max-h-[85vh] overflow-y-auto"
+        className="w-full bg-[#060d20]/95 backdrop-blur-2xl border border-white/18 rounded-3xl overflow-hidden shadow-[0_8px_60px_rgba(0,0,0,0.9)] flex flex-col max-h-[85vh] overflow-y-auto"
         style={{ scrollbarWidth: "none" }}
       >
         {/* ── Header ─────────────────────────────── */}
@@ -74,14 +74,14 @@ export default function DestinationCard({ destination, onEnquire, onClose }: Pro
 
         {/* ── Popular cities ─────────────────────── */}
         <div className="px-4 pt-3 pb-1 shrink-0">
-          <p className="text-white/35 text-[10px] font-bold uppercase tracking-[0.12em] mb-2">
+          <p className="text-white/55 text-[10px] font-bold uppercase tracking-[0.12em] mb-2">
             Top Cities
           </p>
           <div className="flex flex-wrap gap-1.5">
             {cities.map((city) => (
               <span
                 key={city}
-                className="px-2.5 py-1 bg-white/6 border border-white/10 rounded-lg text-white/75 text-xs font-medium hover:bg-white/12 hover:border-yellow-400/30 hover:text-white transition-all cursor-default"
+                className="px-2.5 py-1 bg-white/10 border border-white/15 rounded-lg text-white text-xs font-semibold hover:bg-white/18 hover:border-yellow-400/40 hover:text-white transition-all cursor-default"
               >
                 {city}
               </span>
@@ -94,17 +94,15 @@ export default function DestinationCard({ destination, onEnquire, onClose }: Pro
           {stats.map(({ icon: Icon, label, value }) => (
             <div
               key={label}
-              className="bg-white/4 border border-white/8 rounded-xl p-2.5 hover:border-yellow-400/20 transition-colors group"
+              className="bg-white/6 border border-white/12 rounded-xl p-2.5 hover:border-yellow-400/30 transition-colors group"
             >
               <div className="flex items-center gap-1.5 mb-1">
-                <Icon size={10} className="text-yellow-400 shrink-0" />
-                <span className="text-white/35 text-[9px] font-bold uppercase tracking-wider">
+                <Icon size={11} className="text-yellow-400 shrink-0" />
+                <span className="text-white/60 text-[10px] font-bold uppercase tracking-wider">
                   {label}
                 </span>
               </div>
-              <p className="text-white text-[11px] font-semibold leading-snug line-clamp-1">
-                {value}
-              </p>
+              <p className="text-white text-xs font-semibold leading-snug line-clamp-2">{value}</p>
             </div>
           ))}
         </div>

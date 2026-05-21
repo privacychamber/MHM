@@ -91,16 +91,16 @@ export default function Home() {
           <div className="relative">
             <form
               onSubmit={handleSearchSubmit}
-              className={`flex items-center gap-3 bg-white/6 backdrop-blur-2xl border ${
-                showSuggestions ? "border-yellow-400/60" : "border-white/12"
-              } rounded-2xl px-5 py-3 shadow-[0_4px_40px_rgba(0,0,0,0.55)] transition-all duration-300 hover:border-white/22`}
+              className={`flex items-center gap-3 bg-black/55 backdrop-blur-2xl border ${
+                showSuggestions ? "border-yellow-400/70" : "border-white/25"
+              } rounded-2xl px-5 py-3.5 shadow-[0_4px_40px_rgba(0,0,0,0.75)] transition-all duration-300 hover:border-white/40`}
             >
-              <Search size={19} className="text-white/40 shrink-0" />
+              <Search size={19} className="text-yellow-400 shrink-0" />
               <input
                 id="hero-search"
                 type="text"
-                placeholder="e.g. Japan, Switzerland, Dubai, Thailand..."
-                className="flex-1 bg-transparent border-none outline-none text-white text-[0.95rem] placeholder:text-white/28"
+                placeholder="Search Japan, Switzerland, Dubai, Thailand..."
+                className="flex-1 bg-transparent border-none outline-none text-white text-[0.95rem] font-medium placeholder:text-white/50"
                 value={searchQuery}
                 onChange={(e) => { setSearchQuery(e.target.value); setShowSuggestions(true); }}
                 onFocus={() => setShowSuggestions(true)}
@@ -109,7 +109,7 @@ export default function Home() {
               />
               <button
                 type="submit"
-                className="bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-300 hover:to-amber-400 active:scale-95 text-black px-6 py-2 rounded-xl font-bold text-sm transition-all shrink-0 shadow-[0_0_20px_rgba(245,184,65,0.35)]"
+                className="bg-gradient-to-r from-yellow-400 to-amber-500 hover:from-yellow-300 hover:to-amber-400 active:scale-95 text-black px-6 py-2.5 rounded-xl font-bold text-sm transition-all shrink-0 shadow-[0_0_20px_rgba(245,184,65,0.4)]"
               >
                 Search
               </button>
@@ -146,6 +146,8 @@ export default function Home() {
         </div>
 
         {/* ── Left: Heading + mini trust icons ─────── */}
+        {/* Dark vignette behind text for legibility over the globe */}
+        <div className="absolute left-0 top-0 bottom-0 w-[420px] lg:w-[480px] bg-gradient-to-r from-black/70 via-black/40 to-transparent pointer-events-none z-10" />
         <div className="absolute left-0 top-0 bottom-0 flex flex-col justify-center pl-8 sm:pl-12 lg:pl-16 z-20 pointer-events-none">
           <motion.div
             className="pointer-events-auto max-w-[300px] lg:max-w-[360px]"
@@ -154,15 +156,15 @@ export default function Home() {
             transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
           >
             {/* Badge */}
-            <div className="inline-flex items-center gap-2 mb-5 px-3.5 py-1.5 rounded-full bg-yellow-400/10 border border-yellow-400/22 backdrop-blur-sm">
+            <div className="inline-flex items-center gap-2 mb-5 px-3.5 py-1.5 rounded-full bg-yellow-400/15 border border-yellow-400/40 backdrop-blur-sm">
               <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 animate-pulse" />
-              <span className="text-yellow-400 text-[10px] font-bold uppercase tracking-[0.14em]">
+              <span className="text-yellow-300 text-[10px] font-bold uppercase tracking-[0.14em]">
                 Premium Travel Experience
               </span>
             </div>
 
             {/* Heading */}
-            <h1 className="text-[2.6rem] sm:text-[3.2rem] lg:text-[3.6rem] font-black text-white leading-[1.06] tracking-tight mb-5">
+            <h1 className="text-[2.6rem] sm:text-[3.2rem] lg:text-[3.6rem] font-black text-white leading-[1.06] tracking-tight mb-5 drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)]">
               Explore the<br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-yellow-400 to-amber-500">
                 World.
@@ -173,7 +175,7 @@ export default function Home() {
             </h1>
 
             {/* Sub-text */}
-            <p className="text-white/45 text-sm leading-relaxed mb-7 max-w-[280px]">
+            <p className="text-white/75 text-sm leading-relaxed mb-7 max-w-[280px] drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">
               Search any country, city, or destination and discover amazing travel packages,
               visa information, and attractions instantly.
             </p>
@@ -183,12 +185,12 @@ export default function Home() {
               {heroFeatures.map(({ icon: Icon, label }) => (
                 <div
                   key={label}
-                  className="flex items-center gap-2.5 bg-white/5 border border-white/8 rounded-xl px-3 py-2.5 backdrop-blur-sm hover:border-yellow-400/25 hover:bg-white/8 transition-all"
+                  className="flex items-center gap-2.5 bg-black/40 border border-white/15 rounded-xl px-3 py-2.5 backdrop-blur-sm hover:border-yellow-400/35 hover:bg-black/55 transition-all"
                 >
-                  <div className="w-6 h-6 rounded-lg bg-yellow-400/15 flex items-center justify-center shrink-0">
+                  <div className="w-6 h-6 rounded-lg bg-yellow-400/20 flex items-center justify-center shrink-0">
                     <Icon size={12} className="text-yellow-400" />
                   </div>
-                  <span className="text-white/60 text-xs font-medium">{label}</span>
+                  <span className="text-white/85 text-xs font-semibold">{label}</span>
                 </div>
               ))}
             </div>
