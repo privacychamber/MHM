@@ -6,6 +6,12 @@ import { OrbitControls, Line } from "@react-three/drei";
 import * as THREE from "three";
 import { destinationsData } from "@/data/destinations";
 
+// Helper: look up destination by its lowercase id field (keys in data are capitalized names)
+const getDestById = (id: string | null) => {
+  if (!id) return null;
+  return Object.values(destinationsData).find(d => d.id === id) ?? null;
+};
+
 // Ashima Arts 3D Simplex Noise for procedural Space Background
 const simplexNoiseGLSL = `
 vec4 permute(vec4 x){return mod(((x*34.0)+1.0)*x, 289.0);}
@@ -330,109 +336,135 @@ function EarthAtmosphere({ lightPos, isDark }: { lightPos: THREE.Vector3; isDark
   );
 }
 
-function Earth({ selectedDestination, lightPos }: { selectedDestination: string | null; lightPos: THREE.Vector3 }) {
-  const earthRef = useRef<THREE.Group>(null);
-  const cloudsRef = useRef<THREE.Mesh>(null);
+// ─── Earth day / night composite shader ───────────────────────────────────────
+// Uses world-space normals so the shader works correctly as the Earth group rotates.
+const earthVertexShader = `
+varying vec2 vUv;
+varying vec3 vWorldNormal;
+void main() {
+  vUv = uv;
+  vWorldNormal = normalize(mat3(modelMatrix) * normal);
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+}
+`;
 
-  // States to manage satellite and cloud textures safely
+const earthFragmentShader = `
+uniform sampler2D uDay;
+uniform sampler2D uNight;
+uniform vec3 uSunDir;
+uniform float uHasNight;
+varying vec2 vUv;
+varying vec3 vWorldNormal;
+void main() {
+  vec3 N = normalize(vWorldNormal);
+  float cosTheta = dot(N, normalize(uSunDir));
+  // Smooth terminator: -0.18 = full night, 0.28 = full day
+  float dayFactor = smoothstep(-0.18, 0.28, cosTheta);
+  vec4 dayCol  = texture2D(uDay, vUv);
+  // Sun diffuse on day side (small ambient so oceans aren't pitch-black)
+  float sunDiff = max(cosTheta, 0.06);
+  vec3 dayLit  = dayCol.rgb * (0.06 + sunDiff * 0.94);
+  // City-lights glow on night side
+  vec3 cityLights = vec3(0.0);
+  if (uHasNight > 0.5) {
+    vec4 nightCol = texture2D(uNight, vUv);
+    cityLights = nightCol.rgb * 2.8;
+  }
+  // Blend night → day across the terminator
+  vec3 color = mix(cityLights, dayLit, dayFactor);
+  gl_FragColor = vec4(color, 1.0);
+}
+`;
+
+function Earth({ selectedDestination, lightPos }: { selectedDestination: string | null; lightPos: THREE.Vector3 }) {
+  const earthRef   = useRef<THREE.Group>(null);
+  const cloudsRef  = useRef<THREE.Mesh>(null);
+
   const [textures, setTextures] = useState<{
-    map: THREE.Texture | null;
-    bump: THREE.Texture | null;
-    specular: THREE.Texture | null;
+    day:    THREE.Texture | null;
+    night:  THREE.Texture | null;
     clouds: THREE.Texture | null;
-  }>({
-    map: null,
-    bump: null,
-    specular: null,
-    clouds: null
-  });
+  }>({ day: null, night: null, clouds: null });
 
   const [failed, setFailed] = useState(false);
 
+  // Day/night shader material — created once, uniforms patched when textures arrive
+  const earthMat = useMemo(() => new THREE.ShaderMaterial({
+    uniforms: {
+      uDay:      { value: null },
+      uNight:    { value: null },
+      // Pre-normalised world-space direction toward the sun (light at [12,5,8])
+      uSunDir:   { value: new THREE.Vector3(0.786, 0.328, 0.524) },
+      uHasNight: { value: 0.0 },
+    },
+    vertexShader:   earthVertexShader,
+    fragmentShader: earthFragmentShader,
+  }), []);
+
+  // Push textures into shader uniforms whenever they change
+  useEffect(() => {
+    if (textures.day)   earthMat.uniforms.uDay.value   = textures.day;
+    if (textures.night) {
+      earthMat.uniforms.uNight.value    = textures.night;
+      earthMat.uniforms.uHasNight.value = 1.0;
+    }
+    earthMat.needsUpdate = true;
+  }, [textures, earthMat]);
+
+  // Texture loading: day → night (with fallback) → clouds
   useEffect(() => {
     const loader = new THREE.TextureLoader();
     loader.setCrossOrigin("anonymous");
-    
-    // Load satellite textures from raw github content for 100% reliable CORS header support
+
     loader.load(
       "https://raw.githubusercontent.com/vasturiano/three-globe/master/example/img/earth-blue-marble.jpg",
-      (mapTex) => {
-        loader.load(
-          "https://raw.githubusercontent.com/vasturiano/three-globe/master/example/img/earth-topology.png",
-          (bumpTex) => {
-            loader.load(
-              "https://raw.githubusercontent.com/vasturiano/three-globe/master/example/img/earth-water.png",
-              (specTex) => {
-                loader.load(
-                  "https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_clouds_1024.png",
-                  (cloudTex) => {
-                    setTextures({
-                      map: mapTex,
-                      bump: bumpTex,
-                      specular: specTex,
-                      clouds: cloudTex
-                    });
-                  },
-                  undefined,
-                  () => {
-                    setTextures({
-                      map: mapTex,
-                      bump: bumpTex,
-                      specular: specTex,
-                      clouds: null
-                    });
-                  }
-                );
-              },
+      (dayTex) => {
+        // Night lights — try three.js repo first, then vasturiano fallback
+        const loadNight = (onDone: (t: THREE.Texture | null) => void) => {
+          loader.load(
+            "https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_lights_2048.png",
+            onDone,
+            undefined,
+            () => loader.load(
+              "https://raw.githubusercontent.com/vasturiano/three-globe/master/example/img/earth-night.jpg",
+              onDone,
               undefined,
-              () => {
-                setTextures({
-                  map: mapTex,
-                  bump: bumpTex,
-                  specular: null,
-                  clouds: null
-                });
-              }
-            );
-          },
-          undefined,
-          () => {
-            setTextures({
-              map: mapTex,
-              bump: null,
-              specular: null,
-              clouds: null
-            });
-          }
-        );
+              () => onDone(null)
+            )
+          );
+        };
+
+        loadNight((nightTex) => {
+          loader.load(
+            "https://raw.githubusercontent.com/mrdoob/three.js/master/examples/textures/planets/earth_clouds_1024.png",
+            (cloudTex) => setTextures({ day: dayTex, night: nightTex, clouds: cloudTex }),
+            undefined,
+            ()         => setTextures({ day: dayTex, night: nightTex, clouds: null })
+          );
+        });
       },
       undefined,
       (err) => {
-        console.error("CORS load failed for Earth map:", err);
+        console.error("Earth day texture failed:", err);
         setFailed(true);
       }
     );
   }, []);
 
   useFrame(() => {
-    // Smooth centering camera animation on search/select
     if (earthRef.current) {
-      if (selectedDestination && destinationsData[selectedDestination]) {
-        const dest = destinationsData[selectedDestination];
+      const dest = getDestById(selectedDestination);
+      if (dest) {
         const targetY = -(dest.lng * Math.PI) / 180;
         const targetX = -(dest.lat * Math.PI) / 180;
-        
         earthRef.current.rotation.y = THREE.MathUtils.lerp(earthRef.current.rotation.y, targetY, 0.05);
         earthRef.current.rotation.x = THREE.MathUtils.lerp(earthRef.current.rotation.x, targetX, 0.05);
       } else {
-        // Slow auto-rotation when idle
         earthRef.current.rotation.y += 0.0015;
         earthRef.current.rotation.x = THREE.MathUtils.lerp(earthRef.current.rotation.x, 0, 0.05);
       }
     }
-
     if (cloudsRef.current) {
-      // Cloud layer drifts slowly over time
       cloudsRef.current.rotation.y += 0.0022;
       cloudsRef.current.rotation.x += 0.0004;
     }
@@ -440,116 +472,107 @@ function Earth({ selectedDestination, lightPos }: { selectedDestination: string 
 
   return (
     <group ref={earthRef}>
-      {/* 1. Earth Body Mesh */}
+      {/* Earth body — day/night composite */}
       {failed ? (
-        <mesh castShadow receiveShadow>
+        <mesh>
           <sphereGeometry args={[2.5, 64, 64]} />
-          <meshStandardMaterial 
-            color="#0b1329"
-            roughness={0.4}
-            metalness={0.6}
-          />
+          <meshStandardMaterial color="#0b1329" roughness={0.4} metalness={0.6} />
         </mesh>
-      ) : textures.map ? (
-        <mesh castShadow receiveShadow>
+      ) : textures.day ? (
+        <mesh>
           <sphereGeometry args={[2.5, 64, 64]} />
-          <meshStandardMaterial 
-            map={textures.map}
-            bumpMap={textures.bump || undefined}
-            bumpScale={0.075}
-            roughnessMap={textures.specular || undefined}
-            roughness={0.45}
-            metalness={0.06}
-          />
+          <primitive object={earthMat} />
         </mesh>
       ) : (
         <mesh>
           <sphereGeometry args={[2.5, 32, 32]} />
-          <meshStandardMaterial 
-            color="#0f172a" 
-            roughness={0.8}
-            metalness={0.1}
-          />
+          <meshStandardMaterial color="#0f172a" roughness={0.8} metalness={0.1} />
         </mesh>
       )}
 
-      {/* 2. Realistic Weather Clouds Layer */}
+      {/* Cloud layer — drifts independently */}
       {!failed && textures.clouds && (
         <mesh ref={cloudsRef}>
           <sphereGeometry args={[2.516, 64, 64]} />
           <meshStandardMaterial
             map={textures.clouds}
             transparent={true}
-            opacity={0.7}
-            blending={THREE.NormalBlending}
+            opacity={0.55}
+            blending={THREE.AdditiveBlending}
             depthWrite={false}
           />
         </mesh>
       )}
 
-      {/* Render Destination Pin only for the active searched/selected destination */}
-      {selectedDestination && destinationsData[selectedDestination] && (
-        <DestinationPin 
-          lat={destinationsData[selectedDestination].lat}
-          lng={destinationsData[selectedDestination].lng}
-          isSelected={true}
-        />
-      )}
+      {/* Destination pin */}
+      {(() => {
+        const dest = getDestById(selectedDestination);
+        return dest ? (
+          <DestinationPin lat={dest.lat} lng={dest.lng} isSelected={true} />
+        ) : null;
+      })()}
 
-      {/* Render Flight path from India to Selected Destination */}
-      {selectedDestination && selectedDestination !== "india" && destinationsData[selectedDestination] && (
-        <FlightPath 
-          startLat={destinationsData["india"].lat}
-          startLng={destinationsData["india"].lng}
-          endLat={destinationsData[selectedDestination].lat}
-          endLng={destinationsData[selectedDestination].lng}
-        />
-      )}
+      {/* Flight path from India → selected destination */}
+      {(() => {
+        const dest  = getDestById(selectedDestination);
+        const india = getDestById("india");
+        return (dest && dest.id !== "india" && india) ? (
+          <FlightPath
+            startLat={india.lat}
+            startLng={india.lng}
+            endLat={dest.lat}
+            endLng={dest.lng}
+          />
+        ) : null;
+      })()}
     </group>
   );
 }
 
-export default function Globe({ selectedDestination }: { selectedDestination: string | null }) {
+
+export default function Globe({
+  selectedDestination,
+  className,
+  forceDark,
+}: {
+  selectedDestination: string | null;
+  className?: string;
+  forceDark?: boolean;
+}) {
   const lightPosition = useMemo(() => new THREE.Vector3(12, 5, 8), []);
   const [isDark, setIsDark] = useState(true);
 
   // Monitor class changes on <html> to update uniforms on the fly
   useEffect(() => {
     if (typeof window === "undefined") return;
-
     const checkTheme = () => {
       setIsDark(document.documentElement.classList.contains("dark"));
     };
-
     const observer = new MutationObserver(checkTheme);
     observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
     checkTheme();
-
     return () => observer.disconnect();
   }, []);
 
+  // forceDark overrides theme detection (used for always-dark hero sections)
+  const effectiveDark = forceDark !== undefined ? forceDark : isDark;
+
   return (
-    <div className="w-full h-[60vh] md:h-[80vh] cursor-grab active:cursor-grabbing">
+    <div className={`cursor-grab active:cursor-grabbing ${className ?? "w-full h-[60vh] md:h-[80vh]"}`}>
       <Canvas camera={{ position: [0, 0, 6.2], fov: 45 }} gl={{ alpha: true }}>
-        {/* Deep space ambient fill */}
-        <ambientLight intensity={0.06} />
-        
-        {/* Strong Sun direction to form day/night shadow curves */}
-        <directionalLight position={lightPosition} intensity={2.6} color="#ffffff" />
-        
-        {/* Extremely faint back light to highlight ocean edges slightly on dark side */}
-        <directionalLight position={[-12, -5, -8]} intensity={0.08} color="#38bdf8" />
-
-        {/* Space dust lane and stellar background skybox */}
-        <SpaceBackground isDark={isDark} />
-
-        {/* Illuminated Atmosphere Halo */}
-        <EarthAtmosphere lightPos={lightPosition} isDark={isDark} />
-
+        {/* Ambient fill */}
+        <ambientLight intensity={effectiveDark ? 0.12 : 0.5} />
+        {/* Sun directional light */}
+        <directionalLight position={lightPosition} intensity={effectiveDark ? 2.6 : 2.2} color="#ffffff" />
+        {/* Back-fill */}
+        <directionalLight position={[-12, -5, -8]} intensity={effectiveDark ? 0.18 : 0.35} color={effectiveDark ? "#38bdf8" : "#b0ccff"} />
+        {/* Space background — only in dark mode */}
+        {effectiveDark && <SpaceBackground isDark={effectiveDark} />}
+        {/* Atmosphere halo */}
+        <EarthAtmosphere lightPos={lightPosition} isDark={effectiveDark} />
         <Earth selectedDestination={selectedDestination} lightPos={lightPosition} />
-
-        <OrbitControls 
-          enableZoom={false} 
+        <OrbitControls
+          enableZoom={false}
           enablePan={false}
           autoRotate={false}
           minPolarAngle={Math.PI / 3}
