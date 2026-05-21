@@ -21,10 +21,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" className="dark" suppressHydrationWarning>
       <body suppressHydrationWarning className={`${outfit.variable} antialiased selection:bg-yellow-500/30`}>
         <Navbar />
-        <main>{children}</main>
+        <main suppressHydrationWarning>{children}</main>
         <Footer />
       </body>
     </html>

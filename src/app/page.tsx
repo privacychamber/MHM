@@ -62,12 +62,12 @@ export default function Home() {
       : selectedDestination;
 
   return (
-    <div className="bg-[#020817] min-h-screen overflow-x-hidden">
+    <div suppressHydrationWarning className="bg-[#020817] min-h-screen overflow-x-hidden">
 
       {/* ═══════════════════════════════════════════════════════════
           HERO SECTION — full-viewport immersive globe experience
       ═══════════════════════════════════════════════════════════ */}
-      <section id="home" className="relative h-screen overflow-hidden">
+      <section suppressHydrationWarning id="home" className="relative h-screen overflow-hidden">
 
         {/* Deep space gradient */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#0c1133] via-[#020817] to-[#00040f]" />
