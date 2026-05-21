@@ -303,5 +303,24 @@ export const destinationsData: Record<string, Destination> = {
     price: "\u20B924,999",
     language: "Hindi / English",
     topAttractions: "Taj Mahal, Kerala Backwaters, Rajasthan Forts, Goa Beaches"
+  },
+  "World Tour": {
+    id: "world-tour",
+    name: "Grand World Tour",
+    flag: "\uD83C\uDF0D",
+    rating: 5.0,
+    reviews: "2,500",
+    image: "https://images.unsplash.com/photo-1488085061387-422e29b40080?q=80&w=1000&auto=format&fit=crop",
+    topCities: "Paris, Tokyo, Dubai, New York, Sydney, London, Rome",
+    bestTime: "Year Round",
+    visa: "Multi-Visa Assistance Included",
+    currency: "Multi-Currency",
+    timeDiff: "7 Countries / 14 Nights",
+    flightDuration: "7 Countries / 14 Nights",
+    lat: 0,
+    lng: 0,
+    price: "\u20B93,49,999",
+    language: "Multilingual Support",
+    topAttractions: "Eiffel Tower, Mount Fuji, Burj Khalifa, Colosseum, Grand Canyon"
   }
 };

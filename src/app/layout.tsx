@@ -22,7 +22,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body className={`${outfit.variable} antialiased selection:bg-yellow-500/30`}>
+      <body suppressHydrationWarning className={`${outfit.variable} antialiased selection:bg-yellow-500/30`}>
         <Navbar />
         <main>{children}</main>
         <Footer />

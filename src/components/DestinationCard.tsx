@@ -110,22 +110,33 @@ export default function DestinationCard({ destination, onEnquire, onClose }: Pro
         </div>
 
         {/* ── Price section ──────────────────────── */}
-        <div className="mx-4 my-2 p-3 bg-gradient-to-br from-yellow-400/12 to-amber-500/6 border border-yellow-400/20 rounded-2xl flex items-center justify-between gap-3 shrink-0">
-          <div>
-            <p className="text-white/40 text-[10px] font-medium">Explore Packages Starting From</p>
-            <p className="text-[1.6rem] font-black text-yellow-400 leading-tight tracking-tight">
-              {destination.price}
-            </p>
-            <p className="text-white/30 text-[10px] font-medium">Per Person</p>
-          </div>
-          <div className="w-[60px] h-[52px] rounded-xl overflow-hidden shrink-0 border border-white/10">
-            <img
-              src={destination.image}
-              alt=""
-              className="w-full h-full object-cover opacity-80"
-            />
-          </div>
-        </div>
+        {(() => {
+          const inrNum = parseInt(destination.price.replace(/[^\d]/g, ""), 10);
+          const usdNum = inrNum ? Math.round(inrNum / 84) : null;
+          const usdStr = usdNum ? `$${usdNum.toLocaleString("en-US")}` : null;
+          return (
+            <div className="mx-4 my-2 p-3 bg-gradient-to-br from-yellow-400/12 to-amber-500/6 border border-yellow-400/20 rounded-2xl flex items-center justify-between gap-3 shrink-0">
+              <div>
+                <p className="text-white/40 text-[10px] font-medium">Explore Packages Starting From</p>
+                <p className="text-[1.6rem] font-black text-yellow-400 leading-tight tracking-tight">
+                  {destination.price}
+                </p>
+                {usdStr && (
+                  <p className="text-white/50 text-xs font-semibold mt-0.5">
+                    ≈ {usdStr} <span className="text-white/30 font-normal">per person</span>
+                  </p>
+                )}
+              </div>
+              <div className="w-[60px] h-[52px] rounded-xl overflow-hidden shrink-0 border border-white/10">
+                <img
+                  src={destination.image}
+                  alt=""
+                  className="w-full h-full object-cover opacity-80"
+                />
+              </div>
+            </div>
+          );
+        })()}
 
         {/* ── CTA Buttons ────────────────────────── */}
         <div className="px-4 pb-5 grid grid-cols-2 gap-2 shrink-0">

@@ -21,7 +21,7 @@ const heroFeatures = [
 export default function Home() {
   const [searchQuery, setSearchQuery]           = useState("");
   const [selectedDestination, setSelectedDestination] =
-    useState<Destination | null>(destinationsData["Japan"]);
+    useState<Destination | null>(destinationsData["World Tour"]);
   const [showSuggestions, setShowSuggestions]   = useState(false);
   const [modalOpen, setModalOpen]               = useState(false);
   const [modalDest, setModalDest]               = useState("");
@@ -51,6 +51,11 @@ export default function Home() {
       ? filteredDestinations[0].id
       : selectedDestination?.id ?? null;
 
+  // For the globe: world-tour has lat/lng 0,0 so we pass null to keep auto-rotation
+  const globeDestId =
+    activeDestId === "world-tour" ? null : activeDestId;
+
+
   const activeDestination =
     searchQuery.trim() !== "" && filteredDestinations.length > 0
       ? filteredDestinations[0]
@@ -75,7 +80,7 @@ export default function Home() {
         {/* ── Globe fills entire hero ──────────────── */}
         <div className="absolute inset-0 z-0">
           <Globe
-            selectedDestination={activeDestId}
+            selectedDestination={globeDestId}
             className="w-full h-full"
             forceDark={true}
           />
