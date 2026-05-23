@@ -171,7 +171,7 @@ function SpaceBackground({ isDark }: { isDark: boolean }) {
 
 function DestinationPin({ lat, lng, isSelected }: { lat: number; lng: number; isSelected: boolean }) {
   const pos = useMemo(() => {
-    const r = 2.5;
+    const r = 2.52; // slightly above Earth surface (2.5) to avoid z-fighting or clipping
     const phi = (lat * Math.PI) / 180;
     const theta = (lng * Math.PI) / 180;
     return new THREE.Vector3(
@@ -181,80 +181,50 @@ function DestinationPin({ lat, lng, isSelected }: { lat: number; lng: number; is
     );
   }, [lat, lng]);
 
-  const groupRef = useRef<THREE.Group>(null);
-  const pulse1Ref = useRef<THREE.Mesh>(null);
-  const pulse2Ref = useRef<THREE.Mesh>(null);
-  
-  useEffect(() => {
-    if (groupRef.current) {
-      // Force the group to face the origin (center of Earth)
-      // This aligns the local X-Y plane tangent to the sphere surface.
-      groupRef.current.lookAt(0, 0, 0);
-    }
-  }, [pos]);
+  const auraRef = useRef<THREE.Mesh>(null);
 
   useFrame((state) => {
-    const t = state.clock.getElapsedTime();
-    
-    // First ring pulse (slower, larger)
-    if (pulse1Ref.current) {
-      const s1 = 1 + (t * 2) % 4; // scales from 1 to 5
-      pulse1Ref.current.scale.set(s1, s1, s1);
-      const mat = pulse1Ref.current.material as THREE.MeshBasicMaterial;
+    if (auraRef.current) {
+      // Create a smooth pulsing glow effect (pulsing scale between 0.8 and 1.3)
+      const t = state.clock.getElapsedTime();
+      const s = 1.0 + Math.sin(t * 5.0) * 0.25;
+      auraRef.current.scale.set(s, s, s);
+      const mat = auraRef.current.material as THREE.MeshBasicMaterial;
       if (mat) {
-        mat.opacity = Math.max(0, 0.6 * (1 - (s1 - 1) / 4));
-      }
-    }
-    
-    // Second ring pulse (faster, smaller, offset phase)
-    if (pulse2Ref.current) {
-      const s2 = 1 + ((t * 2 + 2) % 4); // scales from 1 to 5, offset phase
-      pulse2Ref.current.scale.set(s2, s2, s2);
-      const mat = pulse2Ref.current.material as THREE.MeshBasicMaterial;
-      if (mat) {
-        mat.opacity = Math.max(0, 0.6 * (1 - (s2 - 1) / 4));
+        mat.opacity = 0.4 - Math.sin(t * 5.0) * 0.15;
       }
     }
   });
 
   return (
-    <group ref={groupRef} position={pos}>
-      {/* Center dot */}
+    <group position={pos}>
+      {/* 1. Core Bright Dot */}
       <mesh>
-        <sphereGeometry args={[0.05, 16, 16]} />
-        <meshBasicMaterial color={isSelected ? "#eab308" : "#3b82f6"} />
-      </mesh>
-      
-      {/* Center glowing core */}
-      <mesh>
-        <sphereGeometry args={[0.07, 16, 16]} />
+        <sphereGeometry args={[0.06, 16, 16]} />
         <meshBasicMaterial 
-          color={isSelected ? "#fef08a" : "#60a5fa"} 
-          transparent 
-          opacity={0.35} 
+          color={isSelected ? "#fef08a" : "#60a5fa"} // very bright center (yellow-200 / blue-400)
+          depthWrite={false}
         />
       </mesh>
       
-      {/* Pulsing ring 1 */}
-      <mesh ref={pulse1Ref}>
-        <ringGeometry args={[0.04, 0.08, 32]} />
+      {/* 2. Middle Glow Sphere */}
+      <mesh>
+        <sphereGeometry args={[0.11, 16, 16]} />
         <meshBasicMaterial 
           color={isSelected ? "#eab308" : "#3b82f6"} 
           transparent 
-          opacity={0.6} 
-          side={THREE.DoubleSide} 
+          opacity={0.65}
           depthWrite={false}
         />
       </mesh>
 
-      {/* Pulsing ring 2 */}
-      <mesh ref={pulse2Ref}>
-        <ringGeometry args={[0.04, 0.08, 32]} />
+      {/* 3. Pulsing Outer Aura */}
+      <mesh ref={auraRef}>
+        <sphereGeometry args={[0.2, 16, 16]} />
         <meshBasicMaterial 
           color={isSelected ? "#eab308" : "#3b82f6"} 
           transparent 
-          opacity={0.6} 
-          side={THREE.DoubleSide} 
+          opacity={0.35}
           depthWrite={false}
         />
       </mesh>
