@@ -9,7 +9,8 @@ import { destinationsData } from "@/data/destinations";
 // Helper: look up destination by its lowercase id field (keys in data are capitalized names)
 const getDestById = (id: string | null) => {
   if (!id) return null;
-  return Object.values(destinationsData).find(d => d.id === id) ?? null;
+  const targetId = id.toLowerCase();
+  return Object.values(destinationsData).find(d => d.id.toLowerCase() === targetId) ?? null;
 };
 
 // Ashima Arts 3D Simplex Noise for procedural Space Background
@@ -171,9 +172,9 @@ function SpaceBackground({ isDark }: { isDark: boolean }) {
 
 function DestinationPin({ lat, lng, isSelected }: { lat: number; lng: number; isSelected: boolean }) {
   const pos = useMemo(() => {
-    const r = 2.52; // slightly above Earth surface (2.5) to avoid z-fighting or clipping
+    const r = 2.55; // slightly above Earth atmosphere (2.532) to avoid z-fighting or clipping
     const phi = (lat * Math.PI) / 180;
-    const theta = (lng * Math.PI) / 180;
+    const theta = (lng * Math.PI) / 180 + Math.PI;
     return new THREE.Vector3(
       -r * Math.cos(phi) * Math.sin(theta),
       r * Math.sin(phi),
@@ -185,13 +186,13 @@ function DestinationPin({ lat, lng, isSelected }: { lat: number; lng: number; is
 
   useFrame((state) => {
     if (auraRef.current) {
-      // Create a smooth pulsing glow effect (pulsing scale between 0.8 and 1.3)
+      // Create a smooth pulsing glow effect (pulsing scale between 0.85 and 1.35)
       const t = state.clock.getElapsedTime();
-      const s = 1.0 + Math.sin(t * 5.0) * 0.25;
+      const s = 1.1 + Math.sin(t * 5.0) * 0.25;
       auraRef.current.scale.set(s, s, s);
       const mat = auraRef.current.material as THREE.MeshBasicMaterial;
       if (mat) {
-        mat.opacity = 0.4 - Math.sin(t * 5.0) * 0.15;
+        mat.opacity = 0.45 - Math.sin(t * 5.0) * 0.15;
       }
     }
   });
@@ -200,7 +201,7 @@ function DestinationPin({ lat, lng, isSelected }: { lat: number; lng: number; is
     <group position={pos}>
       {/* 1. Core Bright Dot */}
       <mesh>
-        <sphereGeometry args={[0.06, 16, 16]} />
+        <sphereGeometry args={[0.08, 16, 16]} />
         <meshBasicMaterial 
           color={isSelected ? "#fef08a" : "#60a5fa"} // very bright center (yellow-200 / blue-400)
           depthWrite={false}
@@ -209,22 +210,22 @@ function DestinationPin({ lat, lng, isSelected }: { lat: number; lng: number; is
       
       {/* 2. Middle Glow Sphere */}
       <mesh>
-        <sphereGeometry args={[0.11, 16, 16]} />
+        <sphereGeometry args={[0.15, 16, 16]} />
         <meshBasicMaterial 
           color={isSelected ? "#eab308" : "#3b82f6"} 
           transparent 
-          opacity={0.65}
+          opacity={0.7}
           depthWrite={false}
         />
       </mesh>
 
       {/* 3. Pulsing Outer Aura */}
       <mesh ref={auraRef}>
-        <sphereGeometry args={[0.2, 16, 16]} />
+        <sphereGeometry args={[0.28, 16, 16]} />
         <meshBasicMaterial 
           color={isSelected ? "#eab308" : "#3b82f6"} 
           transparent 
-          opacity={0.35}
+          opacity={0.4}
           depthWrite={false}
         />
       </mesh>
@@ -237,7 +238,7 @@ function FlightPath({ startLat, startLng, endLat, endLng }: { startLat: number; 
     const r = 2.51; // slightly above surface
     const getVector = (lat: number, lng: number, radius: number) => {
       const phi = (lat * Math.PI) / 180;
-      const theta = (lng * Math.PI) / 180;
+      const theta = (lng * Math.PI) / 180 + Math.PI;
       return new THREE.Vector3(
         -radius * Math.cos(phi) * Math.sin(theta),
         radius * Math.sin(phi),
@@ -411,10 +412,10 @@ function Earth({ selectedDestination, lightPos, isDark }: { selectedDestination:
 
   const [failed, setFailed] = useState(false);
 
-  // Set rotation order to YXZ for proper longitude/latitude camera targeting
+  // Set rotation order to ZXY for proper longitude/latitude camera targeting
   useEffect(() => {
     if (earthRef.current) {
-      earthRef.current.rotation.reorder("YXZ");
+      earthRef.current.rotation.reorder("ZXY");
     }
   }, []);
 
@@ -487,20 +488,22 @@ function Earth({ selectedDestination, lightPos, isDark }: { selectedDestination:
     if (earthRef.current) {
       const dest = getDestById(selectedDestination);
       if (dest) {
-        // When destination changes, normalise accumulated rotation.y to [-π, π]
-        // so lerp always takes the *shortest* path instead of spinning many extra turns.
+        // Under ZXY rotation order, target rotation is a direct mapping of latitude & longitude (with 180 deg offset)
+        const targetX = (dest.lat * Math.PI) / 180;
+        const targetY = (dest.lng * Math.PI) / 180 + Math.PI;
+
+        // Normalize rotation.y to [-PI, PI] on transition to prevent wrap-around spins
         if (prevDestRef.current !== selectedDestination) {
           prevDestRef.current = selectedDestination;
           const cur = earthRef.current.rotation.y;
           earthRef.current.rotation.y = ((cur % (2 * Math.PI)) + 3 * Math.PI) % (2 * Math.PI) - Math.PI;
         }
-        let targetY = -(dest.lng * Math.PI) / 180 + Math.PI;
-        // Normalize targetY to [-PI, PI] for shortest rotation interpolations
-        targetY = ((targetY + Math.PI) % (2 * Math.PI)) - Math.PI;
-        if (targetY < -Math.PI) targetY += 2 * Math.PI;
 
-        const targetX = (dest.lat * Math.PI) / 180;
-        earthRef.current.rotation.y = THREE.MathUtils.lerp(earthRef.current.rotation.y, targetY, 0.07);
+        // Calculate shortest path angular difference for Y rotation
+        let diffY = targetY - earthRef.current.rotation.y;
+        diffY = Math.atan2(Math.sin(diffY), Math.cos(diffY));
+
+        earthRef.current.rotation.y += diffY * 0.07;
         earthRef.current.rotation.x = THREE.MathUtils.lerp(earthRef.current.rotation.x, targetX, 0.07);
       } else {
         prevDestRef.current = null;
@@ -603,7 +606,7 @@ export default function Globe({
 
   return (
     <div className={`cursor-grab active:cursor-grabbing ${className ?? "w-full h-[60vh] md:h-[80vh]"}`}>
-      <Canvas camera={{ position: [0, 0, 6.6], fov: 45 }} gl={{ alpha: true }}>
+      <Canvas camera={{ position: [0, 0, 7.8], fov: 45 }} gl={{ alpha: true }}>
         {/* Ambient fill */}
         <ambientLight intensity={effectiveDark ? 0.12 : 0.5} />
         {/* Sun directional light */}
