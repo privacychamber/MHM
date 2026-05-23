@@ -69,7 +69,7 @@ export default function Home() {
       {/* ═══════════════════════════════════════════════════════════
           HERO SECTION — full-viewport immersive globe experience
       ═══════════════════════════════════════════════════════════ */}
-      <section suppressHydrationWarning id="home" className="relative h-screen overflow-hidden">
+      <section suppressHydrationWarning id="home" className="relative min-h-screen md:h-screen overflow-hidden md:overflow-hidden pb-10 md:pb-0 flex flex-col md:block">
 
         {/* Ambient background gradient */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#ffffff] via-[#f1f5f9] to-[#e2e8f0] dark:from-[#0c1133] dark:via-[#020817] dark:to-[#00040f]" />
@@ -80,7 +80,7 @@ export default function Home() {
         <div className="absolute top-[35%]  left-[38%]  w-[28%] h-[32%] bg-cyan-500/6  rounded-full blur-[90px]  pointer-events-none" />
 
         {/* ── Globe fills entire hero ──────────────── */}
-        <div className="absolute inset-0 z-0">
+        <div className="relative md:absolute md:inset-0 w-full h-[45vh] md:h-full z-0 order-3 md:order-none mt-6 md:mt-0">
           <Globe
             selectedDestination={globeDestId}
             className="w-full h-full"
@@ -88,7 +88,7 @@ export default function Home() {
         </div>
 
         {/* ── Search bar (top-center, below navbar) ── */}
-        <div className="absolute top-[4.5rem] sm:top-20 left-1/2 -translate-x-1/2 w-full max-w-2xl px-4 z-30">
+        <div className="relative md:absolute md:top-20 md:left-1/2 md:-translate-x-1/2 w-full md:max-w-2xl px-4 pt-24 md:pt-0 pb-4 md:pb-0 z-30 order-1 md:order-none">
           <div className="relative">
             <form
               onSubmit={handleSearchSubmit}
@@ -149,9 +149,9 @@ export default function Home() {
         {/* ── Left: Heading + mini trust icons ─────── */}
         {/* Dark vignette behind text for legibility over the globe */}
         <div className="absolute left-0 top-0 bottom-0 w-[420px] lg:w-[480px] bg-gradient-to-r from-[#ffffff]/70 via-[#ffffff]/40 to-transparent dark:from-black/70 dark:via-black/40 dark:to-transparent pointer-events-none z-10 hidden md:block" />
-        <div className="absolute left-0 top-0 bottom-0 flex-col justify-center pl-8 sm:pl-12 lg:pl-16 z-20 pointer-events-none hidden md:flex">
+        <div className="relative md:absolute md:left-0 md:top-0 md:bottom-0 flex flex-col justify-start md:justify-center items-center md:items-start text-center md:text-left px-4 md:px-0 md:pl-8 sm:md:pl-12 lg:md:pl-16 w-full md:w-auto z-20 pointer-events-none order-2 md:order-none mt-4 md:mt-0">
           <motion.div
-            className="pointer-events-auto max-w-[300px] lg:max-w-[360px]"
+            className="pointer-events-auto max-w-md md:max-w-[300px] lg:max-w-[360px]"
             initial={{ opacity: 0, x: -40 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
@@ -165,24 +165,24 @@ export default function Home() {
             </div>
 
             {/* Heading */}
-            <h1 className="text-[2.6rem] sm:text-[3.2rem] lg:text-[3.6rem] font-black text-white leading-[1.06] tracking-tight mb-5 drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)]">
-              Explore the<br />
+            <h1 className="text-3xl sm:text-4xl md:text-[2.6rem] lg:md:text-[3.2rem] xl:md:text-[3.6rem] font-black text-white leading-[1.06] tracking-tight mb-5 drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)]">
+              Explore the <br className="hidden md:inline" />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-yellow-400 to-amber-500">
                 World.
               </span>
-              <br />
-              Your Journey<br />
+              <br className="hidden md:inline" />
+              Your Journey <br className="hidden md:inline" />
               Starts Here.
             </h1>
 
             {/* Sub-text */}
-            <p className="text-white/75 text-sm leading-relaxed mb-7 max-w-[280px] drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">
+            <p className="text-white/75 text-sm leading-relaxed mb-7 max-w-sm md:max-w-[280px] mx-auto md:mx-0 drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">
               Search any country, city, or destination and discover amazing travel packages,
               visa information, and attractions instantly.
             </p>
 
             {/* Mini feature grid */}
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-2 text-left">
               {heroFeatures.map(({ icon: Icon, label }) => (
                 <div
                   key={label}
@@ -199,7 +199,7 @@ export default function Home() {
         </div>
 
         {/* ── Right: Destination info card ─────────── */}
-        <div className="absolute right-3 lg:right-8 xl:right-12 top-0 bottom-0 flex items-center z-20 w-[340px] lg:w-[368px] pointer-events-none">
+        <div className="relative md:absolute w-full md:w-[340px] lg:md:w-[368px] px-4 md:px-0 right-0 md:right-3 lg:md:right-8 xl:md:right-12 top-0 bottom-0 flex justify-center items-end md:items-center z-20 pointer-events-none order-4 mt-6 md:mt-0">
           {!isCardClosed && activeDestination ? (
             <DestinationCard
               destination={activeDestination}
@@ -211,7 +211,7 @@ export default function Home() {
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               onClick={() => setIsCardClosed(false)}
-              className="absolute right-0 bottom-24 lg:bottom-1/2 lg:translate-y-1/2 pointer-events-auto bg-[#ffffff]/90 dark:bg-[#060d20]/90 backdrop-blur-md border border-yellow-400/50 hover:border-yellow-400 text-yellow-400 font-bold px-4 py-2.5 rounded-full flex items-center gap-2 shadow-[0_0_20px_rgba(234,179,8,0.25)] text-xs transition-all z-20 active:scale-95 cursor-pointer"
+              className="relative md:absolute right-0 bottom-0 md:bottom-24 lg:md:bottom-1/2 lg:md:-translate-y-1/2 pointer-events-auto bg-[#ffffff]/90 dark:bg-[#060d20]/90 backdrop-blur-md border border-yellow-400/50 hover:border-yellow-400 text-yellow-400 font-bold px-4 py-2.5 rounded-full flex items-center gap-2 shadow-[0_0_20px_rgba(234,179,8,0.25)] text-xs transition-all z-20 active:scale-95 cursor-pointer"
             >
               <Sparkles size={14} className="animate-pulse" />
               Show Details
@@ -221,7 +221,7 @@ export default function Home() {
 
         {/* ── Bottom: drag-to-rotate hint ───────────── */}
         <motion.div
-          className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2 pointer-events-none"
+          className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2 pointer-events-none hidden md:flex"
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.2, duration: 0.7 }}
