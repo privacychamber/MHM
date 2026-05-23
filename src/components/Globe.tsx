@@ -181,32 +181,81 @@ function DestinationPin({ lat, lng, isSelected }: { lat: number; lng: number; is
     );
   }, [lat, lng]);
 
-  const pulseRef = useRef<THREE.Mesh>(null);
+  const groupRef = useRef<THREE.Group>(null);
+  const pulse1Ref = useRef<THREE.Mesh>(null);
+  const pulse2Ref = useRef<THREE.Mesh>(null);
   
+  useEffect(() => {
+    if (groupRef.current) {
+      // Force the group to face the origin (center of Earth)
+      // This aligns the local X-Y plane tangent to the sphere surface.
+      groupRef.current.lookAt(0, 0, 0);
+    }
+  }, [pos]);
+
   useFrame((state) => {
-    if (pulseRef.current) {
-      const s = 1 + Math.sin(state.clock.getElapsedTime() * 6) * 0.3;
-      pulseRef.current.scale.set(s, s, s);
-      const mat = pulseRef.current.material as THREE.MeshBasicMaterial;
-      if (mat) mat.opacity = 0.6 - (s - 0.7) * 0.5;
+    const t = state.clock.getElapsedTime();
+    
+    // First ring pulse (slower, larger)
+    if (pulse1Ref.current) {
+      const s1 = 1 + (t * 2) % 4; // scales from 1 to 5
+      pulse1Ref.current.scale.set(s1, s1, s1);
+      const mat = pulse1Ref.current.material as THREE.MeshBasicMaterial;
+      if (mat) {
+        mat.opacity = Math.max(0, 0.6 * (1 - (s1 - 1) / 4));
+      }
+    }
+    
+    // Second ring pulse (faster, smaller, offset phase)
+    if (pulse2Ref.current) {
+      const s2 = 1 + ((t * 2 + 2) % 4); // scales from 1 to 5, offset phase
+      pulse2Ref.current.scale.set(s2, s2, s2);
+      const mat = pulse2Ref.current.material as THREE.MeshBasicMaterial;
+      if (mat) {
+        mat.opacity = Math.max(0, 0.6 * (1 - (s2 - 1) / 4));
+      }
     }
   });
 
   return (
-    <group position={pos}>
+    <group ref={groupRef} position={pos}>
       {/* Center dot */}
       <mesh>
-        <sphereGeometry args={[0.035, 16, 16]} />
+        <sphereGeometry args={[0.05, 16, 16]} />
         <meshBasicMaterial color={isSelected ? "#eab308" : "#3b82f6"} />
       </mesh>
-      {/* Pulsing ring */}
-      <mesh ref={pulseRef}>
-        <ringGeometry args={[0.042, 0.09, 16]} />
+      
+      {/* Center glowing core */}
+      <mesh>
+        <sphereGeometry args={[0.07, 16, 16]} />
+        <meshBasicMaterial 
+          color={isSelected ? "#fef08a" : "#60a5fa"} 
+          transparent 
+          opacity={0.35} 
+        />
+      </mesh>
+      
+      {/* Pulsing ring 1 */}
+      <mesh ref={pulse1Ref}>
+        <ringGeometry args={[0.04, 0.08, 32]} />
         <meshBasicMaterial 
           color={isSelected ? "#eab308" : "#3b82f6"} 
           transparent 
-          opacity={0.5} 
+          opacity={0.6} 
           side={THREE.DoubleSide} 
+          depthWrite={false}
+        />
+      </mesh>
+
+      {/* Pulsing ring 2 */}
+      <mesh ref={pulse2Ref}>
+        <ringGeometry args={[0.04, 0.08, 32]} />
+        <meshBasicMaterial 
+          color={isSelected ? "#eab308" : "#3b82f6"} 
+          transparent 
+          opacity={0.6} 
+          side={THREE.DoubleSide} 
+          depthWrite={false}
         />
       </mesh>
     </group>
@@ -392,6 +441,13 @@ function Earth({ selectedDestination, lightPos, isDark }: { selectedDestination:
 
   const [failed, setFailed] = useState(false);
 
+  // Set rotation order to YXZ for proper longitude/latitude camera targeting
+  useEffect(() => {
+    if (earthRef.current) {
+      earthRef.current.rotation.reorder("YXZ");
+    }
+  }, []);
+
   // Day/night shader material — created once, uniforms patched when textures arrive
   const earthMat = useMemo(() => new THREE.ShaderMaterial({
     uniforms: {
@@ -468,8 +524,12 @@ function Earth({ selectedDestination, lightPos, isDark }: { selectedDestination:
           const cur = earthRef.current.rotation.y;
           earthRef.current.rotation.y = ((cur % (2 * Math.PI)) + 3 * Math.PI) % (2 * Math.PI) - Math.PI;
         }
-        const targetY = -(dest.lng * Math.PI) / 180;
-        const targetX = -(dest.lat * Math.PI) / 180;
+        let targetY = -(dest.lng * Math.PI) / 180 + Math.PI;
+        // Normalize targetY to [-PI, PI] for shortest rotation interpolations
+        targetY = ((targetY + Math.PI) % (2 * Math.PI)) - Math.PI;
+        if (targetY < -Math.PI) targetY += 2 * Math.PI;
+
+        const targetX = (dest.lat * Math.PI) / 180;
         earthRef.current.rotation.y = THREE.MathUtils.lerp(earthRef.current.rotation.y, targetY, 0.07);
         earthRef.current.rotation.x = THREE.MathUtils.lerp(earthRef.current.rotation.x, targetX, 0.07);
       } else {
@@ -573,7 +633,7 @@ export default function Globe({
 
   return (
     <div className={`cursor-grab active:cursor-grabbing ${className ?? "w-full h-[60vh] md:h-[80vh]"}`}>
-      <Canvas camera={{ position: [0, 0, 4.6], fov: 45 }} gl={{ alpha: true }}>
+      <Canvas camera={{ position: [0, 0, 6.6], fov: 45 }} gl={{ alpha: true }}>
         {/* Ambient fill */}
         <ambientLight intensity={effectiveDark ? 0.12 : 0.5} />
         {/* Sun directional light */}
