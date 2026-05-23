@@ -113,7 +113,7 @@ export default function VisaPage() {
                   onClick={() => setSelectedDest(dest.id)}
                   className={`w-full flex items-center justify-between p-3.5 rounded-xl border text-left font-bold transition-all ${
                     selectedDest === dest.id 
-                      ? "bg-gradient-to-r from-yellow-400 to-yellow-600 border-transparent text-navy-950 shadow-lg" 
+                      ? "bg-gradient-to-r from-yellow-400 to-yellow-600 border-transparent text-slate-950 shadow-lg" 
                       : "bg-white/5 border-white/5 text-white hover:bg-white/10"
                   }`}
                 >
@@ -122,7 +122,7 @@ export default function VisaPage() {
                     <span className="text-sm">{dest.name}</span>
                   </div>
                   <span className={`text-[10px] uppercase font-black px-2 py-0.5 rounded-md ${
-                    selectedDest === dest.id ? "bg-navy-900 text-yellow-400" : "bg-white/10 text-slate-300"
+                    selectedDest === dest.id ? "bg-slate-900 text-yellow-400" : "bg-white/10 text-slate-300"
                   }`}>
                     {dest.visa.split(" ")[0]}
                   </span>
@@ -192,7 +192,7 @@ export default function VisaPage() {
                 </div>
                 <button
                   onClick={() => setModalOpen(true)}
-                  className="w-full sm:w-auto bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-300 hover:to-yellow-500 text-navy-950 font-bold px-6 py-3.5 rounded-xl text-sm transition-all shadow-md active:scale-95 whitespace-nowrap"
+                  className="w-full sm:w-auto bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-300 hover:to-yellow-500 text-slate-950 font-bold px-6 py-3.5 rounded-xl text-sm transition-all shadow-md active:scale-95 whitespace-nowrap"
                 >
                   Request Visa Consultation
                 </button>

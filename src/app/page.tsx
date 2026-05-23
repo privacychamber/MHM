@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Search, MapPin, Package, BarChart3, Tag, MousePointer2 } from "lucide-react";
+import { Search, MapPin, Package, BarChart3, Tag, MousePointer2, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Globe from "@/components/Globe";
 import DestinationCard from "@/components/DestinationCard";
@@ -25,6 +25,7 @@ export default function Home() {
   const [showSuggestions, setShowSuggestions]   = useState(false);
   const [modalOpen, setModalOpen]               = useState(false);
   const [modalDest, setModalDest]               = useState("");
+  const [isCardClosed, setIsCardClosed]         = useState(false);
 
   const filteredDestinations = Object.values(destinationsData).filter((d) =>
     d.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -34,6 +35,7 @@ export default function Home() {
     setSelectedDestination(destination);
     setSearchQuery(destination.name);
     setShowSuggestions(false);
+    setIsCardClosed(false);
   };
 
   const triggerEnquiry = (destName: string) => {
@@ -62,15 +64,15 @@ export default function Home() {
       : selectedDestination;
 
   return (
-    <div suppressHydrationWarning className="bg-[#020817] min-h-screen overflow-x-hidden">
+    <div suppressHydrationWarning className="bg-transparent min-h-screen overflow-x-hidden">
 
       {/* ═══════════════════════════════════════════════════════════
           HERO SECTION — full-viewport immersive globe experience
       ═══════════════════════════════════════════════════════════ */}
       <section suppressHydrationWarning id="home" className="relative h-screen overflow-hidden">
 
-        {/* Deep space gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-[#0c1133] via-[#020817] to-[#00040f]" />
+        {/* Ambient background gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#ffffff] via-[#f1f5f9] to-[#e2e8f0] dark:from-[#0c1133] dark:via-[#020817] dark:to-[#00040f]" />
 
         {/* Ambient glow blobs */}
         <div className="absolute top-[-15%] left-[-8%] w-[45%] h-[50%] bg-blue-700/12 rounded-full blur-[130px] pointer-events-none" />
@@ -82,7 +84,6 @@ export default function Home() {
           <Globe
             selectedDestination={globeDestId}
             className="w-full h-full"
-            forceDark={true}
           />
         </div>
 
@@ -91,8 +92,8 @@ export default function Home() {
           <div className="relative">
             <form
               onSubmit={handleSearchSubmit}
-              className={`flex items-center gap-3 bg-black/55 backdrop-blur-2xl border ${
-                showSuggestions ? "border-yellow-400/70" : "border-white/25"
+              className={`flex items-center gap-3 bg-[#ffffff]/60 dark:bg-black/55 backdrop-blur-2xl border ${
+                showSuggestions ? "border-yellow-400/70" : "border-[#0f172a]/15 dark:border-white/25"
               } rounded-2xl px-5 py-3.5 shadow-[0_4px_40px_rgba(0,0,0,0.75)] transition-all duration-300 hover:border-white/40`}
             >
               <Search size={19} className="text-yellow-400 shrink-0" />
@@ -100,7 +101,7 @@ export default function Home() {
                 id="hero-search"
                 type="text"
                 placeholder="Search Japan, Switzerland, Dubai, Thailand..."
-                className="flex-1 bg-transparent border-none outline-none text-white text-[0.95rem] font-medium placeholder:text-white/50"
+                className="flex-1 bg-transparent border-none outline-none text-white text-[0.95rem] font-medium placeholder:text-slate-400 dark:placeholder:text-white/50"
                 value={searchQuery}
                 onChange={(e) => { setSearchQuery(e.target.value); setShowSuggestions(true); }}
                 onFocus={() => setShowSuggestions(true)}
@@ -123,7 +124,7 @@ export default function Home() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 8 }}
                   transition={{ duration: 0.18 }}
-                  className="absolute top-full mt-2 w-full bg-[#08102a]/95 backdrop-blur-2xl border border-white/10 rounded-2xl overflow-hidden shadow-[0_12px_40px_rgba(0,0,0,0.7)] z-50"
+                  className="absolute top-full mt-2 w-full bg-[#ffffff]/95 dark:bg-[#08102a]/95 backdrop-blur-2xl border border-[#0f172a]/10 dark:border-white/10 rounded-2xl overflow-hidden shadow-[0_12px_40px_rgba(0,0,0,0.7)] z-50"
                 >
                   {filteredDestinations.slice(0, 7).map((dest) => (
                     <div
@@ -147,8 +148,8 @@ export default function Home() {
 
         {/* ── Left: Heading + mini trust icons ─────── */}
         {/* Dark vignette behind text for legibility over the globe */}
-        <div className="absolute left-0 top-0 bottom-0 w-[420px] lg:w-[480px] bg-gradient-to-r from-black/70 via-black/40 to-transparent pointer-events-none z-10" />
-        <div className="absolute left-0 top-0 bottom-0 flex flex-col justify-center pl-8 sm:pl-12 lg:pl-16 z-20 pointer-events-none">
+        <div className="absolute left-0 top-0 bottom-0 w-[420px] lg:w-[480px] bg-gradient-to-r from-[#ffffff]/70 via-[#ffffff]/40 to-transparent dark:from-black/70 dark:via-black/40 dark:to-transparent pointer-events-none z-10 hidden md:block" />
+        <div className="absolute left-0 top-0 bottom-0 flex-col justify-center pl-8 sm:pl-12 lg:pl-16 z-20 pointer-events-none hidden md:flex">
           <motion.div
             className="pointer-events-auto max-w-[300px] lg:max-w-[360px]"
             initial={{ opacity: 0, x: -40 }}
@@ -198,11 +199,24 @@ export default function Home() {
         </div>
 
         {/* ── Right: Destination info card ─────────── */}
-        <div className="absolute right-3 lg:right-8 xl:right-12 top-0 bottom-0 flex items-center z-20 w-[340px] lg:w-[368px]">
-          <DestinationCard
-            destination={activeDestination}
-            onEnquire={triggerEnquiry}
-          />
+        <div className="absolute right-3 lg:right-8 xl:right-12 top-0 bottom-0 flex items-center z-20 w-[340px] lg:w-[368px] pointer-events-none">
+          {!isCardClosed && activeDestination ? (
+            <DestinationCard
+              destination={activeDestination}
+              onEnquire={triggerEnquiry}
+              onClose={() => setIsCardClosed(true)}
+            />
+          ) : activeDestination ? (
+            <motion.button
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              onClick={() => setIsCardClosed(false)}
+              className="absolute right-0 bottom-24 lg:bottom-1/2 lg:translate-y-1/2 pointer-events-auto bg-[#ffffff]/90 dark:bg-[#060d20]/90 backdrop-blur-md border border-yellow-400/50 hover:border-yellow-400 text-yellow-400 font-bold px-4 py-2.5 rounded-full flex items-center gap-2 shadow-[0_0_20px_rgba(234,179,8,0.25)] text-xs transition-all z-20 active:scale-95 cursor-pointer"
+            >
+              <Sparkles size={14} className="animate-pulse" />
+              Show Details
+            </motion.button>
+          ) : null}
         </div>
 
         {/* ── Bottom: drag-to-rotate hint ───────────── */}
@@ -223,7 +237,7 @@ export default function Home() {
       {/* ═══════════════════════════════════════════════════════════
           SECTIONS BELOW HERO
       ═══════════════════════════════════════════════════════════ */}
-      <div className="relative bg-[#020817]">
+      <div className="relative bg-navy-900">
         <TrustSection />
         <CreativeExperience />
         <PackageSection />
@@ -234,7 +248,7 @@ export default function Home() {
         href="https://wa.me/918437770006?text=Hi%20MHM%20Travels!%20I%20am%20interested%20in%20a%20travel%20package."
         target="_blank"
         rel="noopener noreferrer"
-        className="fixed bottom-6 right-6 z-50 w-14 h-14 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center shadow-[0_0_24px_rgba(16,185,129,0.45)] text-white hover:scale-110 transition-transform md:hidden"
+        className="fixed bottom-6 right-6 z-50 w-14 h-14 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center shadow-[0_0_24px_rgba(16,185,129,0.45)] text-[#ffffff] hover:scale-110 transition-transform md:hidden"
         aria-label="WhatsApp Enquiry"
       >
         <svg className="w-7 h-7" viewBox="0 0 24 24" fill="currentColor">

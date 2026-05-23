@@ -125,7 +125,7 @@ export default function PackagesPage() {
                 onClick={() => setSelectedCategory(cat)}
                 className={`px-5 py-2.5 rounded-lg text-sm font-semibold transition-all whitespace-nowrap ${
                   selectedCategory === cat 
-                    ? "bg-gradient-to-r from-yellow-400 to-yellow-600 text-navy-900 shadow-md" 
+                    ? "bg-gradient-to-r from-yellow-400 to-yellow-600 text-slate-900 shadow-md" 
                     : "text-slate-400 hover:text-white hover:bg-white/5"
                 }`}
               >
@@ -148,13 +148,13 @@ export default function PackagesPage() {
             >
               {/* Image Column */}
               <div className="w-full md:w-2/5 h-64 md:h-auto relative min-h-[250px]">
-                <div className="absolute inset-0 bg-gradient-to-r from-navy-950/20 to-navy-950 md:from-transparent md:to-navy-950 z-10"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-slate-950/20 to-slate-950 md:from-transparent md:to-slate-950 z-10"></div>
                 <img 
                   src={pkg.image} 
                   alt={pkg.title}
                   className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500"
                 />
-                <span className="absolute top-4 left-4 z-20 bg-yellow-500 text-navy-950 text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-md shadow-md">
+                <span className="absolute top-4 left-4 z-20 bg-yellow-500 text-slate-950 text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-md shadow-md">
                   {pkg.category}
                 </span>
               </div>
@@ -196,7 +196,7 @@ export default function PackagesPage() {
 
                   <button 
                     onClick={() => triggerEnquiry(pkg.title)}
-                    className="bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-300 hover:to-yellow-500 text-navy-900 font-bold px-5 py-2.5 rounded-xl text-xs transition-all shadow-md active:scale-95 flex items-center gap-1.5"
+                    className="bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-300 hover:to-yellow-500 text-slate-900 font-bold px-5 py-2.5 rounded-xl text-xs transition-all shadow-md active:scale-95 flex items-center gap-1.5"
                   >
                     Enquire Now <ArrowRight size={14} />
                   </button>

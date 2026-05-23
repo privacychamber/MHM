@@ -94,7 +94,7 @@ export default function AboutPage() {
             <div className="glass-card overflow-hidden border border-white/10 p-8 relative flex flex-col justify-center min-h-[300px]">
               <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-[80px] pointer-events-none"></div>
               
-              <div className="w-14 h-14 rounded-full bg-gradient-to-tr from-yellow-400 to-yellow-600 flex items-center justify-center text-navy-950 mb-6 shadow-lg">
+              <div className="w-14 h-14 rounded-full bg-gradient-to-tr from-yellow-400 to-yellow-600 flex items-center justify-center text-slate-950 mb-6 shadow-lg">
                 <PlaneTakeoff size={28} />
               </div>
               
@@ -141,7 +141,7 @@ export default function AboutPage() {
           </p>
           <button
             onClick={() => setModalOpen(true)}
-            className="bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-300 hover:to-yellow-500 text-navy-950 font-bold px-8 py-4 rounded-xl text-sm transition-all shadow-md active:scale-95"
+            className="bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-300 hover:to-yellow-500 text-slate-950 font-bold px-8 py-4 rounded-xl text-sm transition-all shadow-md active:scale-95"
           >
             Connect with a Planner
           </button>

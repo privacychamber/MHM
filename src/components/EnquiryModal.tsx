@@ -78,7 +78,7 @@ ${formData.message ? `*Message:* ${formData.message}` : ""}`;
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            className="relative w-full max-w-lg glass-card overflow-hidden border border-white/10 shadow-2xl p-8 z-10"
+            className="relative w-full max-w-lg bg-navy-950/95 backdrop-blur-2xl overflow-hidden border border-white/10 shadow-2xl p-8 z-10"
           >
             {/* Close Button */}
             <button 
@@ -203,7 +203,7 @@ ${formData.message ? `*Message:* ${formData.message}` : ""}`;
                 <div className="flex gap-4">
                   <button 
                     type="submit"
-                    className="flex-1 bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-300 hover:to-yellow-500 text-navy-900 py-3.5 rounded-xl font-bold transition-all shadow-lg transform active:scale-95 flex items-center justify-center gap-2"
+                    className="flex-1 bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-300 hover:to-yellow-500 text-slate-900 py-3.5 rounded-xl font-bold transition-all shadow-lg transform active:scale-95 flex items-center justify-center gap-2"
                   >
                     Submit Request <Send size={16} />
                   </button>
@@ -230,7 +230,7 @@ ${formData.message ? `*Message:* ${formData.message}` : ""}`;
                   
                   <button
                     onClick={handleWhatsAppRedirect}
-                    className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold py-3.5 rounded-xl transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)] hover:shadow-[0_0_35px_rgba(16,185,129,0.6)] flex items-center justify-center gap-2"
+                    className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-[#ffffff] font-bold py-3.5 rounded-xl transition-all shadow-[0_0_20px_rgba(16,185,129,0.3)] hover:shadow-[0_0_35px_rgba(16,185,129,0.6)] flex items-center justify-center gap-2"
                   >
                     Chat on WhatsApp Now
                   </button>

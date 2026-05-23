@@ -219,7 +219,7 @@ export default function CreativeExperience() {
                 {/* Left/Right Text Alignment */}
                 <div className={`w-full md:w-1/2 flex justify-center md:justify-end ${idx % 2 === 0 ? "md:order-1" : "md:order-3"}`}>
                   <div className={`glass-card p-8 rounded-3xl border border-white/10 max-w-md w-full relative transition-all duration-300 hover:border-white/20 hover:shadow-[0_0_30px_rgba(250,204,21,0.05)]`}>
-                    <div className={`inline-flex p-3 rounded-2xl bg-gradient-to-r ${step.color} text-navy-950 font-bold mb-5 shadow-lg`}>
+                    <div className={`inline-flex p-3 rounded-2xl bg-gradient-to-r ${step.color} text-slate-950 font-bold mb-5 shadow-lg`}>
                       <step.icon className="w-6 h-6" />
                     </div>
                     <h3 className="text-xl font-bold text-white mb-3 tracking-tight">{step.title}</h3>
@@ -293,7 +293,7 @@ export default function CreativeExperience() {
                       href={`https://wa.me/918437770006?text=Hi%20MHM%20Travels!%20I%20am%20interested%20in%20the%20${encodeURIComponent(exp.title)}%20package.`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="bg-yellow-400 hover:bg-yellow-300 text-navy-900 px-5 py-2.5 rounded-xl font-bold text-sm tracking-tight transition-all active:scale-95 shadow-md flex items-center gap-1.5"
+                      className="bg-yellow-400 hover:bg-yellow-300 text-slate-900 px-5 py-2.5 rounded-xl font-bold text-sm tracking-tight transition-all active:scale-95 shadow-md flex items-center gap-1.5"
                     >
                       Enquire
                     </a>

@@ -14,7 +14,7 @@ export default function Footer() {
           {/* Brand */}
           <div className="space-y-6">
             <Link href="/" className="flex items-center gap-2 group">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-yellow-400 to-yellow-600 flex items-center justify-center text-navy-900">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-yellow-400 to-yellow-600 flex items-center justify-center text-slate-900">
                 <PlaneTakeoff size={20} />
               </div>
               <div>
@@ -26,13 +26,13 @@ export default function Footer() {
               Experience the world with unparalleled luxury and comfort. Your premium travel partner for creating unforgettable memories across the globe.
             </p>
             <div className="flex gap-4">
-              <a href="#" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white hover:bg-yellow-400 hover:text-navy-900 hover:border-yellow-400 transition-all">
+              <a href="#" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white hover:bg-yellow-400 hover:text-slate-900 hover:border-yellow-400 transition-all">
                 <span className="font-bold text-sm">IG</span>
               </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white hover:bg-yellow-400 hover:text-navy-900 hover:border-yellow-400 transition-all">
+              <a href="#" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white hover:bg-yellow-400 hover:text-slate-900 hover:border-yellow-400 transition-all">
                 <span className="font-bold text-sm">FB</span>
               </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white hover:bg-yellow-400 hover:text-navy-900 hover:border-yellow-400 transition-all">
+              <a href="#" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white hover:bg-yellow-400 hover:text-slate-900 hover:border-yellow-400 transition-all">
                 <span className="font-bold text-sm">X</span>
               </a>
             </div>

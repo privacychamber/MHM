@@ -58,7 +58,7 @@ export default function Navbar() {
       <div className="container mx-auto px-4 md:px-6">
         <div className="flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 group">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-yellow-400 to-yellow-600 flex items-center justify-center text-navy-900 group-hover:shadow-[0_0_15px_rgba(250,204,21,0.5)] transition-all">
+            <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-yellow-400 to-yellow-600 flex items-center justify-center text-slate-900 group-hover:shadow-[0_0_15px_rgba(250,204,21,0.5)] transition-all">
               <PlaneTakeoff size={20} className="transform group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
             </div>
             <div>
@@ -97,7 +97,7 @@ export default function Navbar() {
             </div>
             <button 
               onClick={() => setModalOpen(true)}
-              className="bg-white/10 hover:bg-yellow-400 hover:text-navy-900 text-white border border-white/20 hover:border-yellow-400 transition-all px-6 py-2.5 rounded-full text-sm font-bold shadow-lg hover:shadow-[0_0_20px_rgba(250,204,21,0.4)] backdrop-blur-md"
+              className="bg-white/10 hover:bg-yellow-400 hover:text-slate-900 text-white border border-white/20 hover:border-yellow-400 transition-all px-6 py-2.5 rounded-full text-sm font-bold shadow-lg hover:shadow-[0_0_20px_rgba(250,204,21,0.4)] backdrop-blur-md"
             >
               Enquire Now
             </button>
@@ -155,7 +155,7 @@ export default function Navbar() {
                   setMobileMenuOpen(false);
                   setModalOpen(true);
                 }}
-                className="w-full bg-gradient-to-r from-yellow-400 to-yellow-600 text-navy-900 py-3 rounded-xl font-bold shadow-[0_0_15px_rgba(250,204,21,0.3)]"
+                className="w-full bg-gradient-to-r from-yellow-400 to-yellow-600 text-slate-900 py-3 rounded-xl font-bold shadow-[0_0_15px_rgba(250,204,21,0.3)]"
               >
                 Enquire Now
               </button>

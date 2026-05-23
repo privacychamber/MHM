@@ -66,7 +66,7 @@ export default function DestinationsPage() {
                 onClick={() => setSelectedRegion(tab)}
                 className={`px-5 py-2.5 rounded-lg text-sm font-semibold transition-all ${
                   selectedRegion === tab 
-                    ? "bg-gradient-to-r from-yellow-400 to-yellow-600 text-navy-900 shadow-md" 
+                    ? "bg-gradient-to-r from-yellow-400 to-yellow-600 text-slate-900 shadow-md" 
                     : "text-slate-400 hover:text-white hover:bg-white/5"
                 }`}
               >
@@ -115,7 +115,7 @@ export default function DestinationsPage() {
                   <span className="text-xs text-white font-bold">{dest.name}</span>
                 </span>
                 
-                <span className="absolute bottom-4 right-4 z-20 bg-yellow-500 text-navy-950 text-xs font-black px-3 py-1.5 rounded-lg shadow-lg">
+                <span className="absolute bottom-4 right-4 z-20 bg-yellow-500 text-slate-950 text-xs font-black px-3 py-1.5 rounded-lg shadow-lg">
                   From {dest.price}
                 </span>
               </div>
@@ -157,7 +157,7 @@ export default function DestinationsPage() {
                 {/* Button */}
                 <button 
                   onClick={() => triggerEnquiry(dest.name)}
-                  className="w-full mt-auto bg-white/5 hover:bg-gradient-to-r hover:from-yellow-400 hover:to-yellow-600 hover:text-navy-900 text-white border border-white/10 hover:border-transparent py-3.5 rounded-xl font-bold transition-all text-sm flex items-center justify-center gap-2 shadow-lg"
+                  className="w-full mt-auto bg-white/5 hover:bg-gradient-to-r hover:from-yellow-400 hover:to-yellow-600 hover:text-slate-900 text-white border border-white/10 hover:border-transparent py-3.5 rounded-xl font-bold transition-all text-sm flex items-center justify-center gap-2 shadow-lg"
                 >
                   Enquire Packages
                 </button>
