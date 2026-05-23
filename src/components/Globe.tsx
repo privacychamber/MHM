@@ -353,6 +353,7 @@ uniform sampler2D uDay;
 uniform sampler2D uNight;
 uniform vec3 uSunDir;
 uniform float uHasNight;
+uniform float uIsDark;
 varying vec2 vUv;
 varying vec3 vWorldNormal;
 void main() {
@@ -370,13 +371,15 @@ void main() {
     vec4 nightCol = texture2D(uNight, vUv);
     cityLights = nightCol.rgb * 2.8;
   }
+  // Soft, beautifully shaded day texture on night side in light mode
+  vec3 nightColor = mix(dayCol.rgb * 0.55, cityLights, uIsDark);
   // Blend night → day across the terminator
-  vec3 color = mix(cityLights, dayLit, dayFactor);
+  vec3 color = mix(nightColor, dayLit, dayFactor);
   gl_FragColor = vec4(color, 1.0);
 }
 `;
 
-function Earth({ selectedDestination, lightPos }: { selectedDestination: string | null; lightPos: THREE.Vector3 }) {
+function Earth({ selectedDestination, lightPos, isDark }: { selectedDestination: string | null; lightPos: THREE.Vector3; isDark: boolean }) {
   const earthRef   = useRef<THREE.Group>(null);
   const cloudsRef  = useRef<THREE.Mesh>(null);
   const prevDestRef = useRef<string | null>(null);
@@ -397,6 +400,7 @@ function Earth({ selectedDestination, lightPos }: { selectedDestination: string 
       // Pre-normalised world-space direction toward the sun (light at [12,5,8])
       uSunDir:   { value: new THREE.Vector3(0.786, 0.328, 0.524) },
       uHasNight: { value: 0.0 },
+      uIsDark:   { value: 1.0 },
     },
     vertexShader:   earthVertexShader,
     fragmentShader: earthFragmentShader,
@@ -409,8 +413,9 @@ function Earth({ selectedDestination, lightPos }: { selectedDestination: string 
       earthMat.uniforms.uNight.value    = textures.night;
       earthMat.uniforms.uHasNight.value = 1.0;
     }
+    earthMat.uniforms.uIsDark.value = isDark ? 1.0 : 0.0;
     earthMat.needsUpdate = true;
-  }, [textures, earthMat]);
+  }, [textures, earthMat, isDark]);
 
   // Texture loading: day → night (with fallback) → clouds
   useEffect(() => {
@@ -568,7 +573,7 @@ export default function Globe({
 
   return (
     <div className={`cursor-grab active:cursor-grabbing ${className ?? "w-full h-[60vh] md:h-[80vh]"}`}>
-      <Canvas camera={{ position: [0, 0, 6.2], fov: 45 }} gl={{ alpha: true }}>
+      <Canvas camera={{ position: [0, 0, 4.6], fov: 45 }} gl={{ alpha: true }}>
         {/* Ambient fill */}
         <ambientLight intensity={effectiveDark ? 0.12 : 0.5} />
         {/* Sun directional light */}
@@ -579,7 +584,7 @@ export default function Globe({
         {effectiveDark && <SpaceBackground isDark={effectiveDark} />}
         {/* Atmosphere halo */}
         <EarthAtmosphere lightPos={lightPosition} isDark={effectiveDark} />
-        <Earth selectedDestination={selectedDestination} lightPos={lightPosition} />
+        <Earth selectedDestination={selectedDestination} lightPos={lightPosition} isDark={effectiveDark} />
         <OrbitControls
           enableZoom={false}
           enablePan={false}

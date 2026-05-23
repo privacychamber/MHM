@@ -63,7 +63,7 @@ export default function Navbar() {
             </div>
             <div>
               <h1 className="text-xl font-bold tracking-tight text-white m-0 leading-tight">MHM Travels</h1>
-              <p className="text-[10px] text-yellow-400 uppercase tracking-widest font-semibold m-0">Make Holidays Memorable</p>
+              <p className="text-[10px] text-yellow-600 dark:text-yellow-400 uppercase tracking-widest font-semibold m-0">Make Holidays Memorable</p>
             </div>
           </Link>
 

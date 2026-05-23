@@ -46,8 +46,8 @@ export default function DestinationCard({ destination, onEnquire, onClose }: Pro
                 {destination.name}
               </h2>
               <div className="flex items-center gap-1.5 mt-0.5">
-                <Star size={12} className="text-yellow-400" fill="currentColor" />
-                <span className="text-yellow-400 text-sm font-bold">{destination.rating}</span>
+                <Star size={12} className="text-yellow-600 dark:text-yellow-400" fill="currentColor" />
+                <span className="text-yellow-600 dark:text-yellow-400 text-sm font-bold">{destination.rating}</span>
                 <span className="text-white/40 text-xs">({destination.reviews}+ reviews)</span>
               </div>
             </div>
@@ -116,7 +116,7 @@ export default function DestinationCard({ destination, onEnquire, onClose }: Pro
             <div className="mx-4 my-2 p-3 bg-gradient-to-br from-yellow-400/12 to-amber-500/6 border border-yellow-400/20 rounded-2xl flex items-center justify-between gap-3 shrink-0">
               <div>
                 <p className="text-white/40 text-[10px] font-medium">Explore Packages Starting From</p>
-                <p className="text-[1.6rem] font-black text-yellow-400 leading-tight tracking-tight">
+                <p className="text-[1.6rem] font-black text-yellow-600 dark:text-yellow-400 leading-tight tracking-tight">
                   {destination.price}
                 </p>
                 {usdStr && (

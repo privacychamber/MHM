@@ -80,7 +80,7 @@ export default function Home() {
         <div className="absolute top-[35%]  left-[38%]  w-[28%] h-[32%] bg-cyan-500/6  rounded-full blur-[90px]  pointer-events-none" />
 
         {/* ── Globe fills entire hero ──────────────── */}
-        <div className="relative md:absolute md:inset-0 w-full h-[45vh] md:h-full z-0 order-3 md:order-none mt-6 md:mt-0">
+        <div className="relative md:absolute md:top-24 md:bottom-8 md:left-0 md:right-0 w-full h-[40vh] md:h-auto z-0 order-3 md:order-none my-6 md:my-0">
           <Globe
             selectedDestination={globeDestId}
             className="w-full h-full"
@@ -147,8 +147,8 @@ export default function Home() {
         </div>
 
         {/* ── Left: Heading + mini trust icons ─────── */}
-        {/* Dark vignette behind text for legibility over the globe */}
-        <div className="absolute left-0 top-0 bottom-0 w-[420px] lg:w-[480px] bg-gradient-to-r from-[#ffffff]/70 via-[#ffffff]/40 to-transparent dark:from-black/70 dark:via-black/40 dark:to-transparent pointer-events-none z-10 hidden md:block" />
+        {/* Vignette behind text for legibility over the globe */}
+        <div className="absolute left-0 top-0 bottom-0 w-[520px] lg:w-[600px] bg-gradient-to-r from-[#ffffff]/95 via-[#ffffff]/75 via-[#ffffff]/35 to-transparent dark:from-black/95 dark:via-black/75 dark:via-black/35 dark:to-transparent pointer-events-none z-10 hidden md:block" />
         <div className="relative md:absolute md:left-0 md:top-0 md:bottom-0 flex flex-col justify-start md:justify-center items-center md:items-start text-center md:text-left px-4 md:px-0 md:pl-8 sm:md:pl-12 lg:md:pl-16 w-full md:w-auto z-20 pointer-events-none order-2 md:order-none mt-4 md:mt-0">
           <motion.div
             className="pointer-events-auto max-w-md md:max-w-[300px] lg:max-w-[360px]"
@@ -157,26 +157,26 @@ export default function Home() {
             transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
           >
             {/* Badge */}
-            <div className="inline-flex items-center gap-2 mb-5 px-3.5 py-1.5 rounded-full bg-yellow-400/15 border border-yellow-400/40 backdrop-blur-sm">
+            <div className="inline-flex items-center gap-2 mb-5 px-3.5 py-1.5 rounded-full bg-yellow-400/15 border border-yellow-600/40 dark:border-yellow-400/40 backdrop-blur-sm">
               <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 animate-pulse" />
-              <span className="text-yellow-300 text-[10px] font-bold uppercase tracking-[0.14em]">
+              <span className="text-yellow-600 dark:text-yellow-300 text-[10px] font-bold uppercase tracking-[0.14em]">
                 Premium Travel Experience
               </span>
             </div>
 
             {/* Heading */}
-            <h1 className="text-3xl sm:text-4xl md:text-[2.6rem] lg:md:text-[3.2rem] xl:md:text-[3.6rem] font-black text-white leading-[1.06] tracking-tight mb-5 drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)]">
+            <h1 className="text-3xl sm:text-4xl md:text-[2.6rem] lg:md:text-[3.2rem] xl:md:text-[3.6rem] font-black text-white leading-[1.06] tracking-tight mb-5 dark:drop-shadow-[0_2px_12px_rgba(0,0,0,0.9)]">
               Explore the <br className="hidden md:inline" />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-yellow-400 to-amber-500">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-500 via-yellow-600 to-amber-600 dark:from-yellow-300 dark:via-yellow-400 dark:to-amber-500">
                 World.
               </span>
               <br className="hidden md:inline" />
-              Your Journey <br className="hidden md:inline" />
+              {" "}Your Journey <br className="hidden md:inline" />
               Starts Here.
             </h1>
 
             {/* Sub-text */}
-            <p className="text-white/75 text-sm leading-relaxed mb-7 max-w-sm md:max-w-[280px] mx-auto md:mx-0 drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">
+            <p className="text-white/75 text-sm leading-relaxed mb-7 max-w-sm md:max-w-[280px] mx-auto md:mx-0 dark:drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">
               Search any country, city, or destination and discover amazing travel packages,
               visa information, and attractions instantly.
             </p>
@@ -186,7 +186,7 @@ export default function Home() {
               {heroFeatures.map(({ icon: Icon, label }) => (
                 <div
                   key={label}
-                  className="flex items-center gap-2.5 bg-black/40 border border-white/15 rounded-xl px-3 py-2.5 backdrop-blur-sm hover:border-yellow-400/35 hover:bg-black/55 transition-all"
+                  className="flex items-center gap-2.5 bg-[#ffffff]/80 dark:bg-black/40 border border-slate-200 dark:border-white/15 rounded-xl px-3 py-2.5 backdrop-blur-sm hover:border-yellow-400/35 hover:bg-[#ffffff]/95 dark:hover:bg-black/55 transition-all"
                 >
                   <div className="w-6 h-6 rounded-lg bg-yellow-400/20 flex items-center justify-center shrink-0">
                     <Icon size={12} className="text-yellow-400" />
