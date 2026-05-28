@@ -7,6 +7,7 @@ import Globe from "@/components/Globe";
 import DestinationCard from "@/components/DestinationCard";
 import TrustSection from "@/components/TrustSection";
 import CreativeExperience from "@/components/CreativeExperience";
+import TestimonialSection from "@/components/TestimonialSection";
 import PackageSection from "@/components/PackageSection";
 import EnquiryModal from "@/components/EnquiryModal";
 import { destinationsData, Destination } from "@/data/destinations";
@@ -240,6 +241,7 @@ export default function Home() {
       <div className="relative bg-navy-900">
         <TrustSection />
         <CreativeExperience />
+        <TestimonialSection />
         <PackageSection />
       </div>
 
