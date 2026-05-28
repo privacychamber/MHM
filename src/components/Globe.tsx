@@ -174,11 +174,11 @@ function DestinationPin({ lat, lng, isSelected }: { lat: number; lng: number; is
   const pos = useMemo(() => {
     const r = 2.55; // slightly above Earth atmosphere (2.532) to avoid z-fighting or clipping
     const phi = (lat * Math.PI) / 180;
-    const theta = (lng * Math.PI) / 180 + Math.PI;
+    const lambda = (lng * Math.PI) / 180;
     return new THREE.Vector3(
-      -r * Math.cos(phi) * Math.sin(theta),
+      r * Math.cos(phi) * Math.cos(lambda),
       r * Math.sin(phi),
-      r * Math.cos(phi) * Math.cos(theta)
+      -r * Math.cos(phi) * Math.sin(lambda)
     );
   }, [lat, lng]);
 
@@ -238,11 +238,11 @@ function FlightPath({ startLat, startLng, endLat, endLng }: { startLat: number; 
     const r = 2.51; // slightly above surface
     const getVector = (lat: number, lng: number, radius: number) => {
       const phi = (lat * Math.PI) / 180;
-      const theta = (lng * Math.PI) / 180 + Math.PI;
+      const lambda = (lng * Math.PI) / 180;
       return new THREE.Vector3(
-        -radius * Math.cos(phi) * Math.sin(theta),
+        radius * Math.cos(phi) * Math.cos(lambda),
         radius * Math.sin(phi),
-        radius * Math.cos(phi) * Math.cos(theta)
+        -radius * Math.cos(phi) * Math.sin(lambda)
       );
     };
 
@@ -488,9 +488,16 @@ function Earth({ selectedDestination, lightPos, isDark }: { selectedDestination:
     if (earthRef.current) {
       const dest = getDestById(selectedDestination);
       if (dest) {
-        // Under ZXY rotation order, target rotation is a direct mapping of latitude & longitude (with 180 deg offset)
-        const targetX = (dest.lat * Math.PI) / 180;
-        const targetY = (dest.lng * Math.PI) / 180 + Math.PI;
+        // Calculate correct rotation targets under ZXY order matching SphereGeometry coordinate mapping
+        const phi = (dest.lat * Math.PI) / 180;
+        const lambda = (dest.lng * Math.PI) / 180;
+        const pinX = 2.55 * Math.cos(phi) * Math.cos(lambda);
+        const pinY = 2.55 * Math.sin(phi);
+        const pinZ = -2.55 * Math.cos(phi) * Math.sin(lambda);
+
+        const targetY = Math.atan2(-pinX, pinZ);
+        const vz = -pinX * Math.sin(targetY) + pinZ * Math.cos(targetY);
+        const targetX = Math.atan2(pinY, vz);
 
         // Normalize rotation.y to [-PI, PI] on transition to prevent wrap-around spins
         if (prevDestRef.current !== selectedDestination) {
@@ -503,8 +510,8 @@ function Earth({ selectedDestination, lightPos, isDark }: { selectedDestination:
         let diffY = targetY - earthRef.current.rotation.y;
         diffY = Math.atan2(Math.sin(diffY), Math.cos(diffY));
 
-        earthRef.current.rotation.y += diffY * 0.07;
-        earthRef.current.rotation.x = THREE.MathUtils.lerp(earthRef.current.rotation.x, targetX, 0.07);
+        earthRef.current.rotation.y += diffY * 0.12;
+        earthRef.current.rotation.x = THREE.MathUtils.lerp(earthRef.current.rotation.x, targetX, 0.12);
       } else {
         prevDestRef.current = null;
         earthRef.current.rotation.y += 0.0015;
@@ -588,6 +595,14 @@ export default function Globe({
 }) {
   const lightPosition = useMemo(() => new THREE.Vector3(12, 5, 8), []);
   const [isDark, setIsDark] = useState(true);
+  const controlsRef = useRef<any>(null);
+
+  // Auto-reset OrbitControls to standard front-center view whenever a search/destination is selected
+  useEffect(() => {
+    if (selectedDestination && controlsRef.current) {
+      controlsRef.current.reset();
+    }
+  }, [selectedDestination]);
 
   // Monitor class changes on <html> to update uniforms on the fly
   useEffect(() => {
@@ -619,6 +634,7 @@ export default function Globe({
         <EarthAtmosphere lightPos={lightPosition} isDark={effectiveDark} />
         <Earth selectedDestination={selectedDestination} lightPos={lightPosition} isDark={effectiveDark} />
         <OrbitControls
+          ref={controlsRef}
           enableZoom={false}
           enablePan={false}
           autoRotate={false}
