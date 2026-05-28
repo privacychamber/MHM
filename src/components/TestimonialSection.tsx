@@ -76,7 +76,7 @@ export default function TestimonialSection() {
               viewport={{ once: true }}
               transition={{ delay: idx * 0.15, duration: 0.6 }}
               whileHover={{ y: -8 }}
-              className="bg-[#ffffff]/5 dark:bg-black/25 backdrop-blur-xl border border-slate-200/10 dark:border-white/10 rounded-2xl p-6 flex flex-col justify-between shadow-[0_10px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_15px_40px_rgba(0,0,0,0.5)] hover:border-yellow-400/30 transition-all duration-300 relative group"
+              className="bg-white/5 dark:bg-black/25 backdrop-blur-xl border border-white/10 rounded-2xl p-6 flex flex-col justify-between shadow-[0_10px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_15px_40px_rgba(0,0,0,0.5)] hover:border-yellow-400/30 transition-all duration-300 relative group"
             >
               {/* Quote Mark Icon */}
               <div className="absolute top-5 right-6 text-yellow-400/10 group-hover:text-yellow-400/20 transition-colors">
@@ -92,7 +92,7 @@ export default function TestimonialSection() {
                 </div>
 
                 {/* Review Text */}
-                <p className="text-slate-200 text-sm leading-relaxed mb-6 font-medium italic">
+                <p className="text-slate-300 text-sm leading-relaxed mb-6 font-medium italic">
                   &ldquo;{t.text}&rdquo;
                 </p>
               </div>

@@ -169,7 +169,7 @@ export default function VisaPage() {
                   {visaInfo.docs.map((doc, idx) => (
                     <div key={idx} className="flex items-start gap-2.5 p-3 bg-white/5 rounded-xl border border-white/5">
                       <CheckCircle2 size={16} className="text-green-500 shrink-0 mt-0.5" />
-                      <span className="text-xs text-slate-200 leading-normal">{doc}</span>
+                      <span className="text-xs text-slate-300 leading-normal">{doc}</span>
                     </div>
                   ))}
                 </div>

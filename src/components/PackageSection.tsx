@@ -105,12 +105,12 @@ export default function PackageSection() {
                 >
                   <motion.button 
                     whileTap={{ scale: 0.98 }}
-                    className="w-full group relative overflow-hidden rounded-2xl bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold py-4 px-6 transition-all shadow-[0_10px_20px_rgba(16,185,129,0.25)] hover:shadow-[0_12px_25px_rgba(16,185,129,0.45)] cursor-pointer"
+                    className="w-full group relative overflow-hidden rounded-2xl bg-gradient-to-r from-green-500 to-emerald-600 text-[#ffffff] font-bold py-4 px-6 transition-all shadow-[0_10px_20px_rgba(16,185,129,0.25)] hover:shadow-[0_12px_25px_rgba(16,185,129,0.45)] cursor-pointer"
                   >
                     <span className="relative z-10 flex items-center justify-center gap-2 text-sm uppercase tracking-wider">
                       <WhatsAppIcon className="w-5 h-5 animate-bounce" /> Get Boarding Pass on WhatsApp
                     </span>
-                    <div className="absolute inset-0 bg-white/15 translate-y-[100%] group-hover:translate-y-0 transition-transform duration-300 ease-out z-0"></div>
+                    <div className="absolute inset-0 bg-[#ffffff]/15 translate-y-[100%] group-hover:translate-y-0 transition-transform duration-300 ease-out z-0"></div>
                   </motion.button>
                 </a>
 

@@ -138,19 +138,19 @@ export default function DestinationsPage() {
                 <div className="grid grid-cols-2 gap-3 mb-6 bg-white/5 p-4 rounded-xl border border-white/5">
                   <div className="space-y-0.5">
                     <span className="text-[10px] uppercase font-bold text-slate-500">Best Season</span>
-                    <p className="text-xs text-slate-200 font-medium truncate">{dest.bestTime}</p>
+                    <p className="text-xs text-slate-300 font-medium truncate">{dest.bestTime}</p>
                   </div>
                   <div className="space-y-0.5">
                     <span className="text-[10px] uppercase font-bold text-slate-500">Visa Rule</span>
-                    <p className="text-xs text-slate-200 font-medium truncate">{dest.visa}</p>
+                    <p className="text-xs text-slate-300 font-medium truncate">{dest.visa}</p>
                   </div>
                   <div className="space-y-0.5">
                     <span className="text-[10px] uppercase font-bold text-slate-500">Currency</span>
-                    <p className="text-xs text-slate-200 font-medium truncate">{dest.currency}</p>
+                    <p className="text-xs text-slate-300 font-medium truncate">{dest.currency}</p>
                   </div>
                   <div className="space-y-0.5">
                     <span className="text-[10px] uppercase font-bold text-slate-500">Flight Duration</span>
-                    <p className="text-xs text-slate-200 font-medium truncate">{dest.flightDuration}</p>
+                    <p className="text-xs text-slate-300 font-medium truncate">{dest.flightDuration}</p>
                   </div>
                 </div>
 
