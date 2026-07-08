@@ -17,6 +17,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
+    if (isset($input['action']) && $input['action'] === 'login') {
+        echo json_encode(['success' => true]);
+        exit;
+    }
+
     if (isset($input['data'])) {
         $jsonData = json_encode($input['data'], JSON_PRETTY_PRINT);
         
