@@ -10,7 +10,8 @@ import CreativeExperience from "@/components/CreativeExperience";
 import TestimonialSection from "@/components/TestimonialSection";
 import PackageSection from "@/components/PackageSection";
 import EnquiryModal from "@/components/EnquiryModal";
-import { destinationsData, Destination } from "@/data/destinations";
+import { Destination } from "@/data/destinations";
+import { useData } from "@/context/DataContext";
 
 const heroFeatures = [
   { icon: Search,   label: "Search Destination" },
@@ -20,9 +21,10 @@ const heroFeatures = [
 ];
 
 export default function Home() {
+  const { destinations: destinationsData, isLoading } = useData();
   const [searchQuery, setSearchQuery]           = useState("");
   const [selectedDestination, setSelectedDestination] =
-    useState<Destination | null>(destinationsData["World Tour"]);
+    useState<Destination | null>(null);
   const [showSuggestions, setShowSuggestions]   = useState(false);
   const [modalOpen, setModalOpen]               = useState(false);
   const [modalDest, setModalDest]               = useState("");

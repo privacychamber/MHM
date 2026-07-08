@@ -3,6 +3,7 @@ import { Outfit } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { DataProvider } from "@/context/DataContext";
 
 const outfit = Outfit({
   variable: "--font-outfit",
@@ -23,9 +24,11 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
       <body suppressHydrationWarning className={`${outfit.variable} antialiased selection:bg-yellow-500/30`}>
-        <Navbar />
-        <main suppressHydrationWarning>{children}</main>
-        <Footer />
+        <DataProvider>
+          <Navbar />
+          <main suppressHydrationWarning>{children}</main>
+          <Footer />
+        </DataProvider>
       </body>
     </html>
   );
