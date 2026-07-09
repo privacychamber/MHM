@@ -1,0 +1,17 @@
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # 1. If it's an actual file or directory, serve it directly
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  # 2. If the request doesn't end in a slash, but the corresponding folder/index.html exists, add the trailing slash
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{DOCUMENT_ROOT}/$1/index.html -f
+  RewriteRule ^(.*[^/])$ /$1/ [R=301,L]
+
+  # 3. Serve the 404.html page for anything not found
+  ErrorDocument 404 /404.html
+</IfModule>
