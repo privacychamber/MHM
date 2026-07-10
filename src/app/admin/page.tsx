@@ -65,7 +65,7 @@ export default function AdminPage() {
       <div className="min-h-screen bg-black flex items-center justify-center p-4">
         <div className="bg-gray-900 border border-gray-800 p-8 rounded-2xl w-full max-w-md shadow-2xl">
           <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold text-white mb-2">Admin Login</h1>
+            <h1 className="text-2xl font-bold text-slate-50 mb-2">Admin Login</h1>
             <p className="text-gray-400 text-sm">Enter your password to access the dashboard</p>
           </div>
           
@@ -75,7 +75,7 @@ export default function AdminPage() {
                 type="password" 
                 value={token} 
                 onChange={(e) => setToken(e.target.value)}
-                className="w-full p-4 bg-black/50 border border-gray-700 rounded-xl text-white focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition-all outline-none"
+                className="w-full p-4 bg-black/50 border border-gray-700 rounded-xl text-slate-50 focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 transition-all outline-none"
                 placeholder="Admin Password"
                 required
               />
@@ -99,13 +99,13 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white p-8 pt-32">
+    <div className="min-h-screen bg-black text-slate-50 p-8 pt-32">
       <div className="max-w-4xl mx-auto">
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-3xl font-bold text-yellow-500">MHM Travels Admin</h1>
           <button 
             onClick={() => setIsAuthenticated(false)}
-            className="text-gray-400 hover:text-white transition-colors text-sm"
+            className="text-gray-400 hover:text-slate-50 transition-colors text-sm"
           >
             Logout
           </button>
