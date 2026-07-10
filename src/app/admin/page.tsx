@@ -91,21 +91,23 @@ export default function AdminPage() {
 
   const openForm = (mode: "add" | "edit", item: any = null) => {
     setEditMode(mode);
-    setIsEditing(item);
     if (mode === "add") {
       setFormData(
         activeTab === "destinations"
           ? { id: "", name: "", flag: "", rating: 4.5, reviews: "0", image: "", topCities: "", bestTime: "", visa: "", currency: "", timeDiff: "", flightDuration: "", lat: 0, lng: 0, price: "", language: "", topAttractions: "" }
-          : { id: "", title: "", destinationId: "", image: "", price: "", duration: "", days: 0, nights: 0, inclusions: "" }
+          : { id: "", title: "", category: "Luxury", rating: 5.0, duration: "", destinations: "", price: "", image: "", features: "" }
       );
     } else {
-      setFormData({ ...item });
+      const editingItem = { ...item };
+      if (activeTab === "packages" && Array.isArray(editingItem.features)) {
+        editingItem.features = editingItem.features.join(", ");
+      }
+      setFormData(editingItem);
     }
   };
 
   const closeForm = () => {
     setEditMode(null);
-    setIsEditing(null);
     setFormData({});
   };
 
@@ -126,14 +128,18 @@ export default function AdminPage() {
       }));
     } else {
       if (!formData.id) formData.id = "pkg_" + Date.now();
+      const pkgToSave = { ...formData };
+      if (typeof pkgToSave.features === "string") {
+        pkgToSave.features = pkgToSave.features.split(",").map((s: string) => s.trim()).filter(Boolean);
+      }
       
       setDb(prev => {
         let newPackages = [...prev.packages];
         if (editMode === "edit") {
           const idx = newPackages.findIndex(p => p.id === formData.id);
-          if (idx >= 0) newPackages[idx] = formData;
+          if (idx >= 0) newPackages[idx] = pkgToSave;
         } else {
-          newPackages.push(formData);
+          newPackages.push(pkgToSave);
         }
         return { ...prev, packages: newPackages };
       });
@@ -309,12 +315,12 @@ export default function AdminPage() {
                 <div className="h-40 relative">
                   <img src={pkg.image || "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?q=80&w=1000&auto=format&fit=crop"} alt={pkg.title} className="w-full h-full object-cover" />
                   <div className="absolute top-3 left-3 bg-yellow-500 text-black px-3 py-1 rounded-full text-xs font-bold shadow-lg">
-                    {pkg.days}D / {pkg.nights}N
+                    {pkg.category} • {pkg.duration}
                   </div>
                 </div>
                 <div className="p-5">
                   <h3 className="font-bold text-lg mb-1">{pkg.title}</h3>
-                  <p className="text-gray-400 text-sm mb-4">Destination ID: {pkg.destinationId}</p>
+                  <p className="text-gray-400 text-sm mb-4 line-clamp-1">{pkg.destinations}</p>
                   <div className="flex items-center justify-between pt-4 border-t border-gray-800">
                     <span className="text-yellow-500 font-bold">{pkg.price}</span>
                     <div className="flex gap-2">

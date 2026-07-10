@@ -4,13 +4,15 @@ import { Destination, destinationsData as fallbackData } from "@/data/destinatio
 
 type DataContextType = {
   destinations: Record<string, Destination>;
+  packages: any[];
   isLoading: boolean;
 };
 
-const DataContext = createContext<DataContextType>({ destinations: fallbackData, isLoading: true });
+const DataContext = createContext<DataContextType>({ destinations: fallbackData, packages: [], isLoading: true });
 
 export function DataProvider({ children }: { children: React.ReactNode }) {
   const [destinations, setDestinations] = useState<Record<string, Destination>>(fallbackData);
+  const [packages, setPackages] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -19,6 +21,9 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
       .then(data => {
         if (data.destinations) {
           setDestinations(data.destinations);
+        }
+        if (data.packages) {
+          setPackages(data.packages);
         }
         setIsLoading(false);
       })
@@ -29,7 +34,7 @@ export function DataProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <DataContext.Provider value={{ destinations, isLoading }}>
+    <DataContext.Provider value={{ destinations, packages, isLoading }}>
       {children}
     </DataContext.Provider>
   );

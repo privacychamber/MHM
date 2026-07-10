@@ -4,80 +4,15 @@ import { useState } from "react";
 import { ArrowRight, Plane, Hotel, Check, Compass, Star, Map, Clock } from "lucide-react";
 import { motion } from "framer-motion";
 import EnquiryModal from "@/components/EnquiryModal";
-
-const packages = [
-  {
-    id: "luxury-japan",
-    title: "Signature Japan Chronicles",
-    category: "Luxury",
-    rating: 4.9,
-    duration: "9 Days / 8 Nights",
-    destinations: "Tokyo • Kyoto • Hakone • Osaka",
-    price: "₹1,49,999",
-    image: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?q=80&w=1000&auto=format&fit=crop",
-    features: ["5-Star Ryokan stays", "Private Bullet Train tickets", "Guided tea ceremony", "All entry vouchers"]
-  },
-  {
-    id: "honeymoon-swiss",
-    title: "Romantic Switzerland Hideaway",
-    category: "Honeymoon",
-    rating: 5.0,
-    duration: "8 Days / 7 Nights",
-    destinations: "Zurich • Interlaken • Lucerne • Zermatt",
-    price: "₹1,99,999",
-    image: "https://images.unsplash.com/photo-1530122037265-a5f1f91d3b99?q=80&w=1000&auto=format&fit=crop",
-    features: ["Scenic rail passes", "Private mountain picnic", "Spa resort accommodations", "Lake cruise with dinner"]
-  },
-  {
-    id: "family-dubai",
-    title: "Dubai & Abu Dhabi Discovery",
-    category: "Family",
-    rating: 4.7,
-    duration: "6 Days / 5 Nights",
-    destinations: "Dubai Downtown • Palm Jumeirah • Yas Island",
-    price: "₹74,999",
-    image: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?q=80&w=1000&auto=format&fit=crop",
-    features: ["Burj Khalifa VIP access", "Desert safari with BBQ", "Theme Park passes", "Airport transfers"]
-  },
-  {
-    id: "luxury-maldives",
-    title: "Overwater Villa Retreat",
-    category: "Luxury",
-    rating: 4.9,
-    duration: "5 Days / 4 Nights",
-    destinations: "Private Water Villa Resort",
-    price: "₹99,999",
-    image: "https://images.unsplash.com/photo-1514282401047-d79a71a590e8?q=80&w=1000&auto=format&fit=crop",
-    features: ["Premium All-Inclusive dining", "Speedboat transfers", "Sunset dolphin cruise", "Snorkeling gear"]
-  },
-  {
-    id: "group-thailand",
-    title: "Golden Temple & Island Escape",
-    category: "Group Tour",
-    rating: 4.6,
-    duration: "7 Days / 6 Nights",
-    destinations: "Bangkok • Phuket • Phi Phi Islands",
-    price: "₹54,999",
-    image: "https://images.unsplash.com/photo-1508009603885-50cf7c579365?q=80&w=1000&auto=format&fit=crop",
-    features: ["4-Star beach resort stays", "Island hopping excursion", "Dedicated tour manager", "Traditional buffet"]
-  },
-  {
-    id: "family-singapore",
-    title: "Singapore Wonders & Sentosa",
-    category: "Family",
-    rating: 4.8,
-    duration: "6 Days / 5 Nights",
-    destinations: "Marina Bay • Sentosa Island • Night Safari",
-    price: "₹79,999",
-    image: "https://images.unsplash.com/photo-1525625293386-3f8f99389edd?q=80&w=1000&auto=format&fit=crop",
-    features: ["Universal Studios VIP", "Gardens by the Bay entry", "Daily breakfast buffet", "Flight ticket inclusions"]
-  }
-];
+import { useData } from "@/context/DataContext";
 
 export default function PackagesPage() {
+  const { packages } = useData();
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [modalOpen, setModalOpen] = useState(false);
   const [activePackage, setActivePackage] = useState("");
+
+  const categories = ["All", ...Array.from(new Set(packages.map(p => p.category)))];
 
   const filtered = selectedCategory === "All" 
     ? packages 
@@ -119,7 +54,7 @@ export default function PackagesPage() {
         {/* Category Tabs */}
         <div className="flex justify-center mb-12">
           <div className="flex gap-2 p-1 bg-white/5 rounded-xl border border-white/5 overflow-x-auto">
-            {["All", "Luxury", "Honeymoon", "Family", "Group Tour"].map((cat) => (
+            {categories.map((cat: any) => (
               <button
                 key={cat}
                 onClick={() => setSelectedCategory(cat)}
