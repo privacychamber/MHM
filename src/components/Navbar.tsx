@@ -55,18 +55,18 @@ export default function Navbar() {
           : "bg-transparent py-5"
       }`}
     >
-      <div className="container mx-auto px-4 md:px-6">
+      <div className="max-w-[1400px] mx-auto px-4 md:px-6 lg:px-8">
         <div className="flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 group">
             <img 
               src="/logo.png" 
               alt="MHM Travels Logo" 
-              className="h-14 md:h-20 w-auto object-contain transition-transform group-hover:scale-105" 
+              className="h-10 lg:h-12 w-auto object-contain transition-transform group-hover:scale-105" 
             />
           </Link>
 
           {/* Desktop Nav */}
-          <nav className="hidden lg:flex items-center gap-8">
+          <nav className="hidden lg:flex items-center gap-5 xl:gap-8">
             {navLinks.map((link) => (
               <Link
                 key={link.name}
@@ -79,7 +79,7 @@ export default function Navbar() {
             ))}
           </nav>
 
-          <div className="hidden lg:flex items-center gap-6">
+          <div className="hidden lg:flex items-center gap-4 xl:gap-6">
             {/* Dark/Light Toggle */}
             <button 
               onClick={toggleTheme}
