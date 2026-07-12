@@ -115,7 +115,7 @@ export default function PackagesPage() {
                   </p>
 
                   <ul className="space-y-2 mb-6">
-                    {pkg.features.map((feat, idx) => (
+                    {pkg.features.map((feat: string, idx: number) => (
                       <li key={idx} className="text-xs text-slate-300 flex items-center gap-2">
                         <Check size={14} className="text-green-500 shrink-0" /> {feat}
                       </li>
