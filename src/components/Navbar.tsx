@@ -61,7 +61,7 @@ export default function Navbar() {
             <img 
               src="/logo.png" 
               alt="MHM Travels Logo" 
-              className="h-12 md:h-16 w-auto object-contain transition-transform group-hover:scale-105" 
+              className="h-20 md:h-28 w-auto object-contain transition-transform group-hover:scale-105" 
             />
           </Link>
 
@@ -126,7 +126,7 @@ export default function Navbar() {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="absolute top-full left-0 w-full glass border-t border-white/10 p-4 lg:hidden flex flex-col gap-4 shadow-2xl"
+            className="absolute top-full left-0 w-full bg-slate-950 border-t border-white/10 p-4 lg:hidden flex flex-col gap-4 shadow-2xl"
           >
             {navLinks.map((link) => (
               <Link
