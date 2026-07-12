@@ -61,7 +61,7 @@ export default function Navbar() {
             <img 
               src="/logo.png" 
               alt="MHM Travels Logo" 
-              className="h-14 md:h-20 w-auto object-contain mix-blend-screen transition-transform group-hover:scale-105" 
+              className="h-14 md:h-20 w-auto object-contain transition-transform group-hover:scale-105" 
             />
           </Link>
 
