@@ -58,13 +58,11 @@ export default function Navbar() {
       <div className="container mx-auto px-4 md:px-6">
         <div className="flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 group">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-yellow-400 to-yellow-600 flex items-center justify-center text-slate-900 group-hover:shadow-[0_0_15px_rgba(250,204,21,0.5)] transition-all">
-              <PlaneTakeoff size={20} className="transform group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-            </div>
-            <div>
-              <h1 className="text-xl font-bold tracking-tight text-white m-0 leading-tight">MHM Travels</h1>
-              <p className="text-[10px] text-yellow-600 dark:text-yellow-400 uppercase tracking-widest font-semibold m-0">Make Holidays Memorable</p>
-            </div>
+            <img 
+              src="/logo.png" 
+              alt="MHM Travels Logo" 
+              className="h-12 md:h-16 w-auto object-contain transition-transform group-hover:scale-105" 
+            />
           </Link>
 
           {/* Desktop Nav */}
