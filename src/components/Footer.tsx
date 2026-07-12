@@ -14,13 +14,11 @@ export default function Footer() {
           {/* Brand */}
           <div className="space-y-6">
             <Link href="/" className="flex items-center gap-2 group">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-yellow-400 to-yellow-600 flex items-center justify-center text-slate-900">
-                <PlaneTakeoff size={20} />
-              </div>
-              <div>
-                <h2 className="text-xl font-bold tracking-tight text-white m-0 leading-tight">MHM Travels</h2>
-                <p className="text-[10px] text-yellow-400 uppercase tracking-widest font-semibold m-0">Make Holidays Memorable</p>
-              </div>
+              <img 
+                src="/logo.png" 
+                alt="MHM Travels Logo" 
+                className="h-16 w-auto object-contain transition-transform group-hover:scale-105" 
+              />
             </Link>
             <p className="text-slate-400 text-sm leading-relaxed">
               Experience the world with unparalleled luxury and comfort. Your premium travel partner for creating unforgettable memories across the globe.
@@ -102,7 +100,7 @@ export default function Footer() {
                 <MapPin size={18} className="text-yellow-400 mt-1 shrink-0" />
                 <div>
                   <p className="text-sm text-slate-400">Office</p>
-                  <p className="text-white text-sm">New Delhi, India</p>
+                  <p className="text-white text-sm">Mohali, Punjab</p>
                 </div>
               </li>
             </ul>

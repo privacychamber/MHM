@@ -103,7 +103,7 @@ export default function ContactPage() {
                   <div>
                     <h4 className="text-xs text-slate-500 uppercase font-bold tracking-wider">Corporate Head Office</h4>
                     <p className="text-slate-300 mt-1 text-sm font-medium leading-relaxed">
-                      New Delhi, India
+                      Mohali, Punjab
                     </p>
                   </div>
                 </div>
