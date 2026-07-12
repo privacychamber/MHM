@@ -61,7 +61,7 @@ export default function Navbar() {
             <img 
               src="/logo.png" 
               alt="MHM Travels Logo" 
-              className="h-20 md:h-28 w-auto object-contain mix-blend-screen transition-transform group-hover:scale-105" 
+              className="h-14 md:h-20 w-auto object-contain mix-blend-screen transition-transform group-hover:scale-105" 
             />
           </Link>
 
@@ -126,25 +126,25 @@ export default function Navbar() {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="absolute top-full left-0 w-full bg-slate-950 border-t border-white/10 p-4 lg:hidden flex flex-col gap-4 shadow-2xl"
+            className="absolute top-full left-0 w-full bg-white dark:bg-slate-950 border-t border-slate-200 dark:border-white/10 p-4 lg:hidden flex flex-col gap-4 shadow-2xl"
           >
             {navLinks.map((link) => (
               <Link
                 key={link.name}
                 href={link.href}
                 onClick={() => setMobileMenuOpen(false)}
-                className="text-lg font-medium text-white hover:text-yellow-400 px-4 py-2 border-b border-white/5"
+                className="text-lg font-medium text-slate-900 dark:text-white hover:text-yellow-600 dark:hover:text-yellow-400 px-4 py-2 border-b border-slate-100 dark:border-white/5"
               >
                 {link.name}
               </Link>
             ))}
-            <div className="flex flex-col gap-4 p-4 mt-2 bg-white/5 rounded-xl border border-white/10">
-              <div className="flex items-center gap-3 text-white">
-                <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
-                  <Phone size={18} className="text-yellow-400" />
+            <div className="flex flex-col gap-4 p-4 mt-2 bg-slate-50 dark:bg-white/5 rounded-xl border border-slate-200 dark:border-white/10">
+              <div className="flex items-center gap-3 text-slate-900 dark:text-white">
+                <div className="w-10 h-10 rounded-full bg-slate-200 dark:bg-white/10 flex items-center justify-center">
+                  <Phone size={18} className="text-yellow-600 dark:text-yellow-400" />
                 </div>
                 <div>
-                  <p className="text-xs text-slate-400">Call us 24/7</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">Call us 24/7</p>
                   <p className="font-bold">+91 84377 70006</p>
                 </div>
               </div>
