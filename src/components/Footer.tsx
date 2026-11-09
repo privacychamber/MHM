@@ -118,8 +118,10 @@ export default function Footer() {
           <p className="text-slate-500 text-sm text-center md:text-left">
             &copy; {new Date().getFullYear()} MHM Travels. All rights reserved.
           </p>
-          <div className="flex gap-4 text-sm text-slate-500">
-            <Link href="#" className="hover:text-white transition-colors">Designed for Luxury Travel</Link>
+          <div className="flex flex-wrap items-center justify-center gap-6 text-xs text-slate-400">
+            <Link href="/privacy-policy" className="hover:text-yellow-400 transition-colors">Privacy Policy</Link>
+            <Link href="/terms-and-conditions" className="hover:text-yellow-400 transition-colors">Terms & Conditions</Link>
+            <Link href="/refund-and-payment-policy" className="hover:text-yellow-400 transition-colors">Refund & Payment Policy</Link>
           </div>
         </div>
       </div>
