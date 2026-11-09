@@ -25,9 +25,7 @@ jobs:
         run: npm run build
 
       - name: Deploy via FTPS
-        id: ftps-deploy
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        continue-on-error: true
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
@@ -38,25 +36,6 @@ jobs:
           server-dir: ./
           local-dir: ./out/
           timeout: 600000
-          log-level: verbose
-          exclude: |
-            **/.git*
-            **/.git*/**
-            **/api/data.json
-
-      - name: Fallback Deploy via FTP
-        if: steps.ftps-deploy.outcome != 'success'
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          protocol: ftp
-          port: 21
-          server-dir: ./
-          local-dir: ./out/
-          timeout: 600000
-          log-level: verbose
           exclude: |
             **/.git*
             **/.git*/**
