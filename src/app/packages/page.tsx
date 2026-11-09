@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowRight, Plane, Hotel, Check, Compass, Star, Map, Clock } from "lucide-react";
+import Link from "next/link";
+import { ArrowRight, Plane, Hotel, Check, Compass, Star, Map, Clock, Eye } from "lucide-react";
 import { motion } from "framer-motion";
 import EnquiryModal from "@/components/EnquiryModal";
 import { useData } from "@/context/DataContext";
@@ -82,7 +83,7 @@ export default function PackagesPage() {
               className="glass-card overflow-hidden flex flex-col md:flex-row border border-white/10 hover:border-yellow-400/20 hover:shadow-[0_0_30px_rgba(0,0,0,0.4)] transition-all group"
             >
               {/* Image Column */}
-              <div className="w-full md:w-2/5 h-64 md:h-auto relative min-h-[250px]">
+              <Link href={`/package?id=${pkg.id}`} className="w-full md:w-2/5 h-64 md:h-auto relative min-h-[250px] block overflow-hidden cursor-pointer">
                 <div className="absolute inset-0 bg-gradient-to-r from-slate-950/20 to-slate-950 md:from-transparent md:to-slate-950 z-10"></div>
                 <img 
                   src={pkg.image} 
@@ -92,7 +93,7 @@ export default function PackagesPage() {
                 <span className="absolute top-4 left-4 z-20 bg-yellow-500 text-slate-950 text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-md shadow-md">
                   {pkg.category}
                 </span>
-              </div>
+              </Link>
 
               {/* Content Column */}
               <div className="w-full md:w-3/5 p-6 md:p-8 flex flex-col justify-between relative z-10 bg-navy-900/50">
@@ -106,9 +107,11 @@ export default function PackagesPage() {
                     </span>
                   </div>
 
-                  <h3 className="text-2xl font-bold text-white mb-2 leading-tight group-hover:text-yellow-400 transition-colors">
-                    {pkg.title}
-                  </h3>
+                  <Link href={`/package?id=${pkg.id}`}>
+                    <h3 className="text-2xl font-bold text-white mb-2 leading-tight group-hover:text-yellow-400 transition-colors">
+                      {pkg.title}
+                    </h3>
+                  </Link>
                   
                   <p className="text-xs text-slate-400 font-medium mb-4 flex items-center gap-1">
                     <Map size={12} className="text-slate-500" /> {pkg.destinations}
@@ -123,18 +126,26 @@ export default function PackagesPage() {
                   </ul>
                 </div>
 
-                <div className="flex items-center justify-between border-t border-white/5 pt-4 mt-auto">
+                <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/5 pt-4 mt-auto">
                   <div>
                     <span className="text-[10px] text-slate-500 uppercase font-bold block">Starting At</span>
-                    <span className="text-2xl font-black text-white">{pkg.price}</span>
+                    <span className="text-xl md:text-2xl font-black text-white">{pkg.price}</span>
                   </div>
 
-                  <button 
-                    onClick={() => triggerEnquiry(pkg.title)}
-                    className="bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-300 hover:to-yellow-500 text-slate-900 font-bold px-5 py-2.5 rounded-xl text-xs transition-all shadow-md active:scale-95 flex items-center gap-1.5"
-                  >
-                    Enquire Now <ArrowRight size={14} />
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <Link
+                      href={`/package?id=${pkg.id}`}
+                      className="bg-white/10 hover:bg-white/20 text-white font-bold px-3.5 py-2.5 rounded-xl text-xs transition-all flex items-center gap-1.5 border border-white/10"
+                    >
+                      <Eye size={13} /> View Itinerary
+                    </Link>
+                    <button 
+                      onClick={() => triggerEnquiry(pkg.title)}
+                      className="bg-gradient-to-r from-yellow-400 to-yellow-600 hover:from-yellow-300 hover:to-yellow-500 text-slate-900 font-bold px-4 py-2.5 rounded-xl text-xs transition-all shadow-md active:scale-95 flex items-center gap-1"
+                    >
+                      Enquire <ArrowRight size={13} />
+                    </button>
+                  </div>
                 </div>
               </div>
             </motion.div>
