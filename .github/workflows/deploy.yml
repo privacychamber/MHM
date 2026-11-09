@@ -25,6 +25,7 @@ jobs:
         run: npm run build
 
       - name: Deploy via FTP
+        id: ftp-deploy
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_SERVER }}
@@ -32,6 +33,24 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           server-dir: ./
           local-dir: ./out/
+          timeout: 600000
+          log-level: verbose
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/api/data.json
+
+      - name: Retry Deploy via FTP on Failure
+        if: failure()
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: ./
+          local-dir: ./out/
+          timeout: 600000
+          log-level: verbose
           exclude: |
             **/.git*
             **/.git*/**
