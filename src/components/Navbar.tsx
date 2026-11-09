@@ -2,11 +2,13 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Phone, Menu, X, PlaneTakeoff, Sun, Moon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import EnquiryModal from "@/components/EnquiryModal";
 
 export default function Navbar() {
+  const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
@@ -30,6 +32,10 @@ export default function Navbar() {
 
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  if (pathname?.startsWith("/admin")) {
+    return null;
+  }
 
   const toggleTheme = () => {
     const nextTheme = theme === "dark" ? "light" : "dark";

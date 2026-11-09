@@ -1,10 +1,16 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { MapPin, Phone, Mail, ArrowRight, AtSign } from "lucide-react";
 import { FaInstagram, FaLinkedinIn } from "react-icons/fa6";
 
 export default function Footer() {
+  const pathname = usePathname();
+
+  if (pathname?.startsWith("/admin")) {
+    return null;
+  }
   return (
     <footer className="relative bg-navy-900 border-t border-white/10 pt-20 pb-10 overflow-hidden">
       {/* Background elements */}

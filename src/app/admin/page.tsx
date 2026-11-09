@@ -346,12 +346,15 @@ export default function AdminPage() {
   const destList = Object.entries(db.destinations || {});
 
   return (
-    <div className="min-h-screen bg-black text-slate-50 flex flex-col md:flex-row pt-20 md:pt-0">
+    <div className="h-screen w-full bg-black text-slate-50 flex flex-col md:flex-row overflow-hidden">
       {/* Sidebar */}
-      <aside className="w-full md:w-64 bg-gray-950 border-r border-gray-800 flex flex-col md:h-screen md:sticky md:top-0">
-        <div className="p-6 hidden md:block">
-          <h1 className="text-2xl font-black text-yellow-500 tracking-tight">MHM Admin</h1>
-          <p className="text-xs text-gray-500 mt-1">Tour Packages & Itinerary Manager</p>
+      <aside className="w-full md:w-64 bg-gray-950 border-r border-gray-800 flex flex-col md:h-screen shrink-0">
+        <div className="p-6 border-b border-gray-800/80 flex items-center gap-3">
+          <img src="/logo.png" alt="MHM Logo" className="h-9 w-auto object-contain" />
+          <div>
+            <h1 className="text-lg font-black text-yellow-500 tracking-tight leading-tight">MHM Admin</h1>
+            <p className="text-[11px] text-gray-500">Management Panel</p>
+          </div>
         </div>
         
         <nav className="flex md:flex-col gap-2 p-4 flex-1">
@@ -369,6 +372,15 @@ export default function AdminPage() {
             <MapPin size={20} />
             <span>Destinations</span>
           </button>
+
+          <Link
+            href="/"
+            target="_blank"
+            className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-400 hover:text-yellow-400 hover:bg-gray-900 transition-all font-medium mt-4 text-xs border border-gray-800/50"
+          >
+            <ExternalLink size={16} />
+            <span>View Live Website</span>
+          </Link>
         </nav>
         
         <div className="p-4 mt-auto border-t border-gray-800/60">
@@ -383,7 +395,7 @@ export default function AdminPage() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 p-6 md:p-10 pb-32 overflow-y-auto">
+      <main className="flex-1 h-screen p-6 md:p-10 pb-32 overflow-y-auto">
         <header className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 pb-6 border-b border-gray-800">
           <div>
             <h2 className="text-3xl font-black capitalize text-white flex items-center gap-3">
