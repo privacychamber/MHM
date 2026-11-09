@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { MapPin, Phone, Mail, ArrowRight, Instagram, Linkedin, AtSign } from "lucide-react";
+import { MapPin, Phone, Mail, ArrowRight, AtSign } from "lucide-react";
+import { FaInstagram, FaLinkedinIn } from "react-icons/fa6";
 
 export default function Footer() {
   return (
@@ -25,13 +26,13 @@ export default function Footer() {
             </p>
             <div className="flex gap-4">
               <a href="https://www.instagram.com/mhm_travels/" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white hover:bg-yellow-400 hover:text-slate-900 hover:border-yellow-400 transition-all group">
-                <Instagram size={18} className="transition-transform group-hover:scale-110" />
+                <FaInstagram size={18} className="transition-transform group-hover:scale-110" />
               </a>
               <a href="https://www.threads.com/@mhm_travels" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white hover:bg-yellow-400 hover:text-slate-900 hover:border-yellow-400 transition-all group">
                 <AtSign size={18} className="transition-transform group-hover:scale-110" />
               </a>
               <a href="https://www.linkedin.com/company/mhmtravels/" target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white hover:bg-yellow-400 hover:text-slate-900 hover:border-yellow-400 transition-all group">
-                <Linkedin size={18} className="transition-transform group-hover:scale-110" />
+                <FaLinkedinIn size={18} className="transition-transform group-hover:scale-110" />
               </a>
             </div>
           </div>
