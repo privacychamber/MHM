@@ -1,4 +1,4 @@
-name: Deploy to Namecheap FTP
+name: Deploy to Namecheap
 
 on:
   push:
@@ -24,23 +24,83 @@ jobs:
       - name: Build static export
         run: npm run build
 
-      - name: Install lftp
-        run: sudo apt-get update && sudo apt-get install -y lftp
-
-      - name: Deploy via lftp mirror
-        env:
-          FTP_HOST: ${{ secrets.FTP_SERVER }}
-          FTP_USER: ${{ secrets.FTP_USERNAME }}
-          FTP_PASS: ${{ secrets.FTP_PASSWORD }}
+      - name: Prepare build package
         run: |
-          lftp -c "
-          set ssl:verify-certificate no;
-          set ftp:ssl-allow yes;
-          set ftp:passive-mode yes;
-          set net:timeout 30;
-          set net:max-retries 10;
-          set net:reconnect-interval-base 3;
-          open -u \"$FTP_USER\",\"$FTP_PASS\" \"$FTP_HOST\";
-          mirror -R --verbose --only-newer --parallel=3 --exclude '^api/data\.json' ./out/ ./;
-          bye;
-          "
+          mkdir -p deploy-package/api
+          cp public/api/deploy.php deploy-package/api/deploy.php
+          cd out
+          zip -r ../deploy-package/build.zip . -x "api/data.json"
+          cd ..
+          echo "Deployment package prepared successfully:"
+          ls -lh deploy-package/
+
+      - name: Deploy via HTTPS API
+        id: https-deploy
+        continue-on-error: true
+        run: |
+          echo "Attempting ultra-fast HTTPS deployment to https://mhmtravels.in/api/deploy.php..."
+          RESPONSE=$(curl -s -S --max-time 120 -w "\n%{http_code}" -X POST \
+            -F "token=mhmtravels_admin_secret_2026" \
+            -F "build_zip=@deploy-package/build.zip" \
+            https://mhmtravels.in/api/deploy.php || true)
+          
+          HTTP_CODE=$(echo "$RESPONSE" | tail -n1)
+          BODY=$(echo "$RESPONSE" | sed '$d')
+          echo "HTTP Code: $HTTP_CODE"
+          echo "Body: $BODY"
+          
+          if [ "$HTTP_CODE" = "200" ]; then
+            echo "HTTPS deploy succeeded!"
+            echo "success=true" >> $GITHUB_OUTPUT
+          else
+            echo "Deploy endpoint not yet bootstrapped on server (HTTP $HTTP_CODE). Falling back to FTP bootstrap."
+            echo "success=false" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+      - name: Fallback Deploy via FTP (Bootstrap)
+        if: steps.https-deploy.outcome != 'success'
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftps
+          port: 21
+          security: loose
+          server-dir: ./
+          local-dir: ./deploy-package/
+          timeout: 120000
+
+      - name: Trigger archive extraction via Deploy API
+        if: steps.https-deploy.outcome != 'success'
+        run: |
+          echo "Extracting uploaded archive on server..."
+          sleep 3
+          RESPONSE=$(curl -s -S --max-time 120 \
+            "https://mhmtravels.in/api/deploy.php?token=mhmtravels_admin_secret_2026")
+          echo "Extraction response: $RESPONSE"
+
+      - name: Verify Live Deployment
+        run: |
+          echo "Verifying live pages..."
+          sleep 2
+          
+          check_url() {
+            local url=$1
+            local code=$(curl -s -o /dev/null -w "%{http_code}" "$url")
+            echo "Testing $url -> HTTP $code"
+            if [ "$code" != "200" ]; then
+              echo "ERROR: $url returned HTTP $code instead of 200"
+              return 1
+            fi
+            return 0
+          }
+          
+          check_url "https://mhmtravels.in/"
+          check_url "https://mhmtravels.in/privacy-policy/"
+          check_url "https://mhmtravels.in/refund-and-payment-policy/"
+          check_url "https://mhmtravels.in/terms-and-conditions/"
+          check_url "https://mhmtravels.in/package/"
+          
+          echo "ALL PAGES VERIFIED LIVE AND OPERATIONAL!"
