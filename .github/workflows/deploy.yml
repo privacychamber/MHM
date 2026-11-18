@@ -103,5 +103,8 @@ jobs:
           check_url "https://mhmtravels.in/refund-and-payment-policy/"
           check_url "https://mhmtravels.in/terms-and-conditions/"
           check_url "https://mhmtravels.in/package/"
+          check_url "https://mhmtravels.in/destinations/"
+          check_url "https://mhmtravels.in/destinations/japan/"
+          check_url "https://mhmtravels.in/visa/"
           
           echo "ALL PAGES VERIFIED LIVE AND OPERATIONAL!"

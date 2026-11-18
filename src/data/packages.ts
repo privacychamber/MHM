@@ -14,6 +14,8 @@ export interface TravelPackage {
   rating: number;
   duration: string;
   destinations: string;
+  destinationIds?: string[];
+  published?: boolean;
   price: string;
   image: string;
   heroImage?: string;
@@ -34,6 +36,8 @@ export const defaultPackages: TravelPackage[] = [
     rating: 4.9,
     duration: "11 Days / 10 Nights",
     destinations: "Auckland • Rotorua • Queenstown • Milford Sound • Franz Josef • Christchurch",
+    destinationIds: ["new-zealand"],
+    published: true,
     price: "₹2,49,999",
     image: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=1200&auto=format&fit=crop",
     heroImage: "https://images.unsplash.com/photo-1507699622108-4be3abd695ad?q=80&w=1800&auto=format&fit=crop",
@@ -228,6 +232,8 @@ export const defaultPackages: TravelPackage[] = [
     rating: 4.9,
     duration: "9 Days / 8 Nights",
     destinations: "Tokyo • Kyoto • Hakone • Osaka",
+    destinationIds: ["japan"],
+    published: true,
     price: "₹1,49,999",
     image: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?q=80&w=1000&auto=format&fit=crop",
     heroImage: "https://images.unsplash.com/photo-1503899036084-c55cdd92da26?q=80&w=1800&auto=format&fit=crop",
@@ -376,6 +382,8 @@ export const defaultPackages: TravelPackage[] = [
     rating: 5.0,
     duration: "8 Days / 7 Nights",
     destinations: "Zurich • Interlaken • Lucerne • Zermatt",
+    destinationIds: ["switzerland"],
+    published: true,
     price: "₹1,99,999",
     image: "https://images.unsplash.com/photo-1530122037265-a5f1f91d3b99?q=80&w=1000&auto=format&fit=crop",
     heroImage: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=1800&auto=format&fit=crop",
@@ -510,6 +518,8 @@ export const defaultPackages: TravelPackage[] = [
     rating: 4.7,
     duration: "6 Days / 5 Nights",
     destinations: "Dubai Downtown • Palm Jumeirah • Yas Island",
+    destinationIds: ["dubai"],
+    published: true,
     price: "₹74,999",
     image: "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?q=80&w=1000&auto=format&fit=crop",
     heroImage: "https://images.unsplash.com/photo-1518684079-3c830dcef090?q=80&w=1800&auto=format&fit=crop",
@@ -622,6 +632,8 @@ export const defaultPackages: TravelPackage[] = [
     rating: 4.9,
     duration: "5 Days / 4 Nights",
     destinations: "Private Island Resort • North Malé Atoll",
+    destinationIds: ["maldives"],
+    published: true,
     price: "₹99,999",
     image: "https://images.unsplash.com/photo-1514282401047-d79a71a590e8?q=80&w=1000&auto=format&fit=crop",
     heroImage: "https://images.unsplash.com/photo-1573843981267-be1999ff37cd?q=80&w=1800&auto=format&fit=crop",

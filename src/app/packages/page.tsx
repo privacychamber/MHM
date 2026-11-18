@@ -8,7 +8,7 @@ import EnquiryModal from "@/components/EnquiryModal";
 import { useData } from "@/context/DataContext";
 
 export default function PackagesPage() {
-  const { packages } = useData();
+  const { packages, getDestinationById } = useData();
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [modalOpen, setModalOpen] = useState(false);
   const [activePackage, setActivePackage] = useState("");
@@ -113,9 +113,29 @@ export default function PackagesPage() {
                     </h3>
                   </Link>
                   
-                  <p className="text-xs text-slate-400 font-medium mb-4 flex items-center gap-1">
-                    <Map size={12} className="text-slate-500" /> {pkg.destinations}
+                  <p className="text-xs text-slate-400 font-medium mb-3 flex items-center gap-1">
+                    <Map size={12} className="text-slate-500 shrink-0" /> {pkg.destinations}
                   </p>
+
+                  {pkg.destinationIds && pkg.destinationIds.length > 0 && (
+                    <div className="flex flex-wrap items-center gap-1.5 mb-4">
+                      {pkg.destinationIds.map((dId) => {
+                        const dest = getDestinationById(dId);
+                        const name = dest ? dest.name : dId;
+                        const slug = dest?.slug || dId;
+                        return (
+                          <Link
+                            key={dId}
+                            href={`/destinations/${slug}`}
+                            className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-white/5 hover:bg-yellow-400 hover:text-slate-950 text-slate-300 border border-white/10 transition-all"
+                          >
+                            {dest?.flag && <span>{dest.flag}</span>}
+                            <span>{name}</span>
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  )}
 
                   <ul className="space-y-2 mb-6">
                     {pkg.features.map((feat: string, idx: number) => (

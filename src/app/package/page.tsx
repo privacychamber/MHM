@@ -28,7 +28,7 @@ import EnquiryModal from "@/components/EnquiryModal";
 function PackageDetailContent() {
   const searchParams = useSearchParams();
   const packageId = searchParams.get("id");
-  const { packages, isLoading } = useData();
+  const { packages, isLoading, getDestinationById } = useData();
 
   const [activeTab, setActiveTab] = useState<"dayByDay" | "yourTrip" | "travelTips" | "inclusions">("dayByDay");
   const [expandedDays, setExpandedDays] = useState<Record<number, boolean>>({ 1: true });
@@ -116,10 +116,34 @@ function PackageDetailContent() {
           </h1>
 
           {/* Destinations String */}
-          <p className="text-slate-300 text-sm md:text-base mt-3 flex items-center gap-2 max-w-3xl">
-            <MapPin size={16} className="text-yellow-400 shrink-0" />
-            <span>{currentPkg.destinations}</span>
-          </p>
+          <div className="mt-3 max-w-3xl">
+            <p className="text-slate-300 text-sm md:text-base flex items-center gap-2">
+              <MapPin size={16} className="text-yellow-400 shrink-0" />
+              <span>{currentPkg.destinations}</span>
+            </p>
+
+            {currentPkg.destinationIds && currentPkg.destinationIds.length > 0 && (
+              <div className="flex flex-wrap items-center gap-2 mt-3">
+                <span className="text-xs text-slate-400 font-semibold uppercase tracking-wider">Explore Destinations:</span>
+                {currentPkg.destinationIds.map((dId) => {
+                  const dest = getDestinationById(dId);
+                  const name = dest ? dest.name : dId;
+                  const slug = dest?.slug || dId;
+                  return (
+                    <Link
+                      key={dId}
+                      href={`/destinations/${slug}`}
+                      className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white/10 hover:bg-yellow-400 hover:text-slate-950 text-yellow-300 border border-white/15 transition-all shadow-sm group"
+                    >
+                      {dest?.flag && <span>{dest.flag}</span>}
+                      <span>{name}</span>
+                      <ArrowRight size={11} className="group-hover:translate-x-0.5 transition-transform" />
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         </div>
       </section>
 

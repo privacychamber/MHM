@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Star, Clock, CheckCircle, Banknote, Plane, Languages, Sparkles, X
@@ -138,12 +139,12 @@ export default function DestinationCard({ destination, onEnquire, onClose }: Pro
 
         {/* ── CTA Buttons ────────────────────────── */}
         <div className="px-4 pb-5 grid grid-cols-2 gap-2 shrink-0">
-          <button
-            onClick={() => onEnquire && onEnquire(destination.name)}
-            className="bg-white/8 hover:bg-white/15 border border-white/15 hover:border-white/30 text-white py-2.5 rounded-xl text-xs font-bold transition-all"
+          <Link
+            href={`/destinations/${destination.slug || destination.id}`}
+            className="bg-white/10 hover:bg-yellow-400 hover:text-slate-950 border border-white/15 hover:border-yellow-400 text-white py-2.5 rounded-xl text-xs font-bold transition-all text-center flex items-center justify-center"
           >
-            View Packages
-          </button>
+            Explore Page
+          </Link>
           <a
             href={`https://wa.me/918437770006?text=Hi%20MHM%20Travels!%20I%20am%20interested%20in%20a%20travel%20package%20to%20${encodeURIComponent(destination.name)}.`}
             target="_blank"

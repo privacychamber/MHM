@@ -98,3 +98,4 @@ Write-Output "Favicon and icon files generated successfully!"
 Write-Output ("App favicon size: " + (Get-Item $appIcoPath).Length + " bytes")
 Write-Output ("Public favicon size: " + (Get-Item $pubIcoPath).Length + " bytes")
 Write-Output ("Icon png size: " + (Get-Item $appPngPath).Length + " bytes")
+
