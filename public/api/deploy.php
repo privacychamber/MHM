@@ -106,3 +106,4 @@ if ($extractResult) {
     http_response_code(500);
     echo json_encode(['error' => 'Failed to extract archive contents. Check directory permissions.']);
 }
+
